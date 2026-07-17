@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../Sbdms.Shared/src/Sbdms.SharedLibrary/Sbdms.SharedLibrary.csproj" />
+    <ProjectReference Include="../Sbdms.Ltr.Contracts/Sbdms.Ltr.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common/Errors/" />
+    <Folder Include="Common/Helper/" />
+    <Folder Include="Domain/" />
+    <Folder Include="Interface/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+</Project>
