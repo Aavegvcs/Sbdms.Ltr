@@ -1,0 +1,33 @@
+@HostAddress = http://localhost:5154
+
+### Get all current statuses
+GET {{HostAddress}}/api/v1/currentstatus
+Accept: application/json
+
+### Get current status by id (Guid)
+@currentStatusId = 00000000-0000-0000-0000-000000000000
+
+GET {{HostAddress}}/api/v1/currentstatus/{{currentStatusId}}
+Accept: application/json
+
+### Add current status
+POST {{HostAddress}}/api/v1/currentstatus
+Content-Type: application/json
+
+{
+  "statusName": "Active",
+  "status": true,
+  "createdBy": "tester"
+}
+
+### Update current status
+# Replace {{currentStatusId}} above with the currentStatusId returned from "Add current status" before running this.
+PUT {{HostAddress}}/api/v1/currentstatus/{{currentStatusId}}
+Content-Type: application/json
+
+{
+  "currentStatusId": "{{currentStatusId}}",
+  "statusName": "Inactive",
+  "status": true,
+  "modBy": "tester2"
+}

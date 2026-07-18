@@ -1,9 +1,12 @@
 using System.IO.Compression;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Asp.Versioning;
 using Asp.Versioning.Conventions;
 using Scalar.AspNetCore;
+using Sbdms.Ltr.Core;
 using Sbdms.Ltr.Core.Feature;
+using Sbdms.Ltr.Infra.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -14,7 +17,10 @@ var builder = WebApplication.CreateBuilder(args);
         options.Providers.Add<GzipCompressionProvider>();
     });
 
-    builder.Services.AddControllers();
+    builder.Services.AddInfrastructureServices(builder.Configuration).AddCoreHandlers();
+
+    builder.Services.AddControllers()
+        .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
     builder.Services.AddHttpClient();
     builder.Services.AddApiVersioning(options =>
     {

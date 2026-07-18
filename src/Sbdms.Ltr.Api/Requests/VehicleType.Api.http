@@ -1,0 +1,41 @@
+@HostAddress = http://localhost:5154
+
+### Get all vehicle types
+GET {{HostAddress}}/api/v1/vehicletype
+Accept: application/json
+
+### Get vehicle type by id (Guid)
+@vehicleTypeId = 00000000-0000-0000-0000-000000000000
+
+GET {{HostAddress}}/api/v1/vehicletype/{{vehicleTypeId}}
+Accept: application/json
+
+### Add vehicle type
+POST {{HostAddress}}/api/v1/vehicletype
+Content-Type: application/json
+
+{
+  "locCode": 1,
+  "vehicleTypeDesc": "Sedan",
+  "capacity": 4,
+  "billingCode": 0,
+  "isActive": true,
+  "occupancy": 4,
+  "createdBy": "tester"
+}
+
+### Update vehicle type
+# Replace {{vehicleTypeId}} above with the vehicleTypeId returned from "Add vehicle type" before running this.
+PUT {{HostAddress}}/api/v1/vehicletype/{{vehicleTypeId}}
+Content-Type: application/json
+
+{
+  "vehicleTypeId": "{{vehicleTypeId}}",
+  "locCode": 1,
+  "vehicleTypeDesc": "Sedan-Updated",
+  "capacity": 4,
+  "billingCode": 0,
+  "isActive": true,
+  "occupancy": 4,
+  "modBy": "tester2"
+}

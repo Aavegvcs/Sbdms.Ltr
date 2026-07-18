@@ -1,0 +1,57 @@
+@HostAddress = http://localhost:5154
+
+### Request OTP (creates the user on first login, using name/employeeCode; ignored if the user already exists)
+POST {{HostAddress}}/api/v1/auth/otp/request
+Content-Type: application/json
+
+{
+  "mobileNumber": "9876543210",
+  "name": "Gaurav",
+  "employeeCode": "EMP-001"
+}
+
+### Verify OTP
+# Copy the OTP from the "Request OTP" response above (dev-mode returns it directly instead of sending an SMS).
+POST {{HostAddress}}/api/v1/auth/otp/verify
+Content-Type: application/json
+
+{
+  "mobileNumber": "9876543210",
+  "otp": "REPLACE_WITH_OTP_FROM_REQUEST_RESPONSE"
+}
+
+### Refresh token
+# Copy the refreshToken from the "Verify OTP" (or a previous "Refresh token") response.
+POST {{HostAddress}}/api/v1/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "REPLACE_WITH_REFRESH_TOKEN"
+}
+
+### Verify OTP with wrong code (expect 400)
+POST {{HostAddress}}/api/v1/auth/otp/verify
+Content-Type: application/json
+
+{
+  "mobileNumber": "9876543210",
+  "otp": "000000"
+}
+
+### Refresh with an unknown/invalid token (expect 401)
+POST {{HostAddress}}/api/v1/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "not-a-real-token"
+}
+
+### Get all users (never returns Otp/AccessToken/RefreshToken)
+GET {{HostAddress}}/api/v1/user
+Accept: application/json
+
+### Get user by id
+@userId = 1
+
+GET {{HostAddress}}/api/v1/user/{{userId}}
+Accept: application/json
