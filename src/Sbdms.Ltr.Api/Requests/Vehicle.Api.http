@@ -1,0 +1,82 @@
+@HostAddress = http://localhost:5154
+
+### Get all vehicles
+GET {{HostAddress}}/api/v1/vehicle
+Accept: application/json
+
+### Get vehicle by id (int, auto-incremented)
+@vehicleId = 1
+
+GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}
+Accept: application/json
+
+### Add vehicle
+# vehicleTypeCode must be an existing VehicleType.VehicleTypeCode, currentStatusId an existing CurrentStatus.Id,
+# driverId (optional) an existing Driver.Id (create these first via VehicleType/CurrentStatus/Driver .http files)
+POST {{HostAddress}}/api/v1/vehicle
+Content-Type: application/json
+
+{
+  "vehicleTypeCode": 1,
+  "driverId": null,
+  "currentStatusId": 1,
+  "qrUniqueCode": "QR-001"
+}
+
+### Update vehicle
+# Replace {{vehicleId}} above with the id returned from "Add vehicle" before running this.
+PUT {{HostAddress}}/api/v1/vehicle/{{vehicleId}}
+Content-Type: application/json
+
+{
+  "id": {{vehicleId}},
+  "vehicleTypeCode": 1,
+  "driverId": 1,
+  "currentStatusId": 1,
+  "qrUniqueCode": "QR-001-UPDATED"
+}
+
+### Add vehicle with duplicate QR code (expect 409 Conflict)
+POST {{HostAddress}}/api/v1/vehicle
+Content-Type: application/json
+
+{
+  "vehicleTypeCode": 1,
+  "driverId": null,
+  "currentStatusId": 1,
+  "qrUniqueCode": "QR-001-UPDATED"
+}
+
+### Add vehicle with unknown vehicleTypeCode (expect 400 validation error)
+POST {{HostAddress}}/api/v1/vehicle
+Content-Type: application/json
+
+{
+  "vehicleTypeCode": 999,
+  "driverId": null,
+  "currentStatusId": 1,
+  "qrUniqueCode": "QR-002"
+}
+
+### Add vehicle with unknown driverId (expect 400 validation error)
+POST {{HostAddress}}/api/v1/vehicle
+Content-Type: application/json
+
+{
+  "vehicleTypeCode": 1,
+  "driverId": 999,
+  "currentStatusId": 1,
+  "qrUniqueCode": "QR-003"
+}
+
+### Get vehicle by unknown id (expect 404 Not Found)
+GET {{HostAddress}}/api/v1/vehicle/999999
+Accept: application/json
+
+### Get vehicle by QR code (public — used right after a scan)
+GET {{HostAddress}}/api/v1/vehicle/qr/QR-001
+Accept: application/json
+
+### Get a printable QR code image for a vehicle (returns image/png)
+# In VS Code / Visual Studio's REST client this renders inline as an image.
+GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/qr-image

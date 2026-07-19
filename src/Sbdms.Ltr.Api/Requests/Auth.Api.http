@@ -1,0 +1,85 @@
+@HostAddress = http://localhost:5154
+
+### Add user (register ahead of time — mobile number, name, employee code)
+POST {{HostAddress}}/api/v1/user
+Content-Type: application/json
+
+{
+  "mobileNumber": "9876543210",
+  "name": "Gaurav",
+  "employeeCode": "EMP-001"
+}
+
+### Request OTP (mobile number only — user must already be registered)
+POST {{HostAddress}}/api/v1/auth/otp/request
+Content-Type: application/json
+
+{
+  "mobileNumber": "9876543210"
+}
+
+### Verify OTP
+# The OTP is never returned in the response (that would defeat the point of an OTP).
+# Until a real SMS gateway is wired up, check the running API's console/log output for a line like:
+#   "OTP for 9876543210: 123456"
+POST {{HostAddress}}/api/v1/auth/otp/verify
+Content-Type: application/json
+
+{
+  "mobileNumber": "9876543210",
+  "otp": "326609"
+}
+
+### Refresh token
+# Copy the refreshToken from the "Verify OTP" (or a previous "Refresh token") response.
+POST {{HostAddress}}/api/v1/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "REPLACE_WITH_REFRESH_TOKEN"
+}
+
+### Request OTP for an unregistered mobile number (expect 404 Not Found)
+POST {{HostAddress}}/api/v1/auth/otp/request
+Content-Type: application/json
+
+{
+  "mobileNumber": "0000000000"
+}
+
+### Verify OTP with wrong code (expect 400)
+POST {{HostAddress}}/api/v1/auth/otp/verify
+Content-Type: application/json
+
+{
+  "mobileNumber": "9876543210",
+  "otp": "000000"
+}
+
+### Refresh with an unknown/invalid token (expect 401)
+POST {{HostAddress}}/api/v1/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "not-a-real-token"
+}
+
+### Add user with duplicate employee code (expect 409 Conflict)
+POST {{HostAddress}}/api/v1/user
+Content-Type: application/json
+
+{
+  "mobileNumber": "1111111111",
+  "name": "Someone Else",
+  "employeeCode": "EMP-001"
+}
+
+### Get all users (never returns Otp/AccessToken/RefreshToken)
+GET {{HostAddress}}/api/v1/user
+Accept: application/json
+
+### Get user by id
+@userId = 1
+
+GET {{HostAddress}}/api/v1/user/{{userId}}
+Accept: application/json

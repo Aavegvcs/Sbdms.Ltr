@@ -1,0 +1,66 @@
+@HostAddress = http://localhost:5154
+
+### Get all drivers
+GET {{HostAddress}}/api/v1/driver
+Accept: application/json
+
+### Get driver by id (int, auto-incremented)
+@driverId = 1
+
+GET {{HostAddress}}/api/v1/driver/{{driverId}}
+Accept: application/json
+
+### Add driver
+# currentStatusId must be an existing CurrentStatus.Id (create one first via CurrentStatus.Api.http)
+POST {{HostAddress}}/api/v1/driver
+Content-Type: application/json
+
+{
+  "driverName": "Ramesh Kumar",
+  "driverNumber": "9876543210",
+  "dob": "1990-05-20",
+  "licenceNumber": "DL-12345",
+  "currentStatusId": 1
+}
+
+### Update driver
+# Replace {{driverId}} above with the id returned from "Add driver" before running this.
+PUT {{HostAddress}}/api/v1/driver/{{driverId}}
+Content-Type: application/json
+
+{
+  "id": {{driverId}},
+  "driverName": "Ramesh Kumar Singh",
+  "driverNumber": "9876543211",
+  "dob": "1990-05-20",
+  "licenceNumber": "DL-12345-UPDATED",
+  "currentStatusId": 1
+}
+
+### Add driver with duplicate licence number (expect 409 Conflict)
+POST {{HostAddress}}/api/v1/driver
+Content-Type: application/json
+
+{
+  "driverName": "Suresh",
+  "driverNumber": "9999999999",
+  "dob": "1985-01-01",
+  "licenceNumber": "DL-12345-UPDATED",
+  "currentStatusId": 1
+}
+
+### Add driver with unknown currentStatusId (expect 400 validation error)
+POST {{HostAddress}}/api/v1/driver
+Content-Type: application/json
+
+{
+  "driverName": "Unknown Status Driver",
+  "driverNumber": "9000000000",
+  "dob": "1992-03-15",
+  "licenceNumber": "DL-99999",
+  "currentStatusId": 999
+}
+
+### Get driver by unknown id (expect 404 Not Found)
+GET {{HostAddress}}/api/v1/driver/999999
+Accept: application/json
