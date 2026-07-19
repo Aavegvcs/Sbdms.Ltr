@@ -72,3 +72,11 @@ Content-Type: application/json
 ### Get vehicle by unknown id (expect 404 Not Found)
 GET {{HostAddress}}/api/v1/vehicle/999999
 Accept: application/json
+
+### Get vehicle by QR code (public — used right after a scan)
+GET {{HostAddress}}/api/v1/vehicle/qr/QR-001
+Accept: application/json
+
+### Get a printable QR code image for a vehicle (returns image/png)
+# In VS Code / Visual Studio's REST client this renders inline as an image.
+GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/qr-image

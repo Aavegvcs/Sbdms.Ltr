@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Sbdms.Ltr.Core.Feature.Bookings;
 using Sbdms.Ltr.Core.Feature.CurrentStatuses;
 using Sbdms.Ltr.Core.Feature.Drivers;
 using Sbdms.Ltr.Core.Feature.Users;
@@ -16,6 +17,8 @@ public static class Extensions
             .AddScoped<UpdateVehicleHandler>()
             .AddScoped<GetAllVehiclesHandler>()
             .AddScoped<GetVehicleByIdHandler>()
+            .AddScoped<GetVehicleByQrCodeHandler>()
+            .AddScoped<GetVehicleQrImageHandler>()
             .AddScoped<AddVehicleTypeHandler>()
             .AddScoped<UpdateVehicleTypeHandler>()
             .AddScoped<GetAllVehicleTypesHandler>()
@@ -28,11 +31,17 @@ public static class Extensions
             .AddScoped<UpdateDriverHandler>()
             .AddScoped<GetAllDriversHandler>()
             .AddScoped<GetDriverByIdHandler>()
+            .AddScoped<AddUserHandler>()
             .AddScoped<RequestOtpHandler>()
             .AddScoped<VerifyOtpHandler>()
             .AddScoped<RefreshTokenHandler>()
             .AddScoped<GetAllUsersHandler>()
-            .AddScoped<GetUserByIdHandler>();
+            .AddScoped<GetUserByIdHandler>()
+            .AddScoped<GuestStartBookingHandler>()
+            .AddScoped<GuestConfirmBookingHandler>()
+            .AddScoped<CreateBookingHandler>()
+            .AddScoped<GetAllBookingsHandler>()
+            .AddScoped<GetBookingByIdHandler>();
 
         return services;
     }

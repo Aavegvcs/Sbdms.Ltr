@@ -1,11 +1,15 @@
 using System.IO.Compression;
+using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.IdentityModel.Tokens;
 using Asp.Versioning;
 using Asp.Versioning.Conventions;
 using Scalar.AspNetCore;
 using Sbdms.Ltr.Core;
 using Sbdms.Ltr.Core.Feature;
+using Sbdms.Ltr.Infra.Common;
 using Sbdms.Ltr.Infra.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +22,25 @@ var builder = WebApplication.CreateBuilder(args);
     });
 
     builder.Services.AddInfrastructureServices(builder.Configuration).AddCoreHandlers();
+
+    var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()!;
+
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret)),
+                ValidateIssuer = true,
+                ValidIssuer = jwtOptions.Issuer,
+                ValidateAudience = true,
+                ValidAudience = jwtOptions.Audience,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+        });
+    builder.Services.AddAuthorization();
 
     builder.Services.AddControllers()
         .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -70,6 +93,7 @@ var app = builder.Build();
     }
 
     app.UseHttpsRedirection();
+    app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
     app.UseCors("AllowAll");

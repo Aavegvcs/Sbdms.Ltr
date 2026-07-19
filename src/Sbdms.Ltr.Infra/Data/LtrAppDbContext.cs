@@ -10,6 +10,7 @@ public class LtrAppDbContext(DbContextOptions<LtrAppDbContext> options) : DbCont
     public DbSet<CurrentStatus> CurrentStatuses => Set<CurrentStatus>();
     public DbSet<Driver> Drivers => Set<Driver>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<Booking> Bookings => Set<Booking>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sbdms.Ltr.Infra.Data;
 
@@ -11,9 +12,11 @@ using Sbdms.Ltr.Infra.Data;
 namespace Sbdms.Ltr.Infra.Data.Migrations
 {
     [DbContext(typeof(LtrAppDbContext))]
-    partial class LtrAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260718134802_AddBookings")]
+    partial class AddBookings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,9 +39,6 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("LastActivityOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
@@ -54,9 +54,6 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int?>("TripId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -65,11 +62,9 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TripId");
-
                     b.HasIndex("UserId");
 
-                    b.HasIndex("VehicleId", "TripId", "Status");
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("Bookings", (string)null);
                 });
@@ -323,11 +318,6 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
 
             modelBuilder.Entity("Sbdms.Ltr.Core.Domain.Booking", b =>
                 {
-                    b.HasOne("Sbdms.Ltr.Core.Domain.Booking", null)
-                        .WithMany()
-                        .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Sbdms.Ltr.Core.Domain.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")

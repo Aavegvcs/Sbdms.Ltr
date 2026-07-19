@@ -1,7 +1,7 @@
 @HostAddress = http://localhost:5154
 
-### Request OTP (creates the user on first login, using name/employeeCode; ignored if the user already exists)
-POST {{HostAddress}}/api/v1/auth/otp/request
+### Add user (register ahead of time — mobile number, name, employee code)
+POST {{HostAddress}}/api/v1/user
 Content-Type: application/json
 
 {
@@ -10,14 +10,24 @@ Content-Type: application/json
   "employeeCode": "EMP-001"
 }
 
+### Request OTP (mobile number only — user must already be registered)
+POST {{HostAddress}}/api/v1/auth/otp/request
+Content-Type: application/json
+
+{
+  "mobileNumber": "9876543210"
+}
+
 ### Verify OTP
-# Copy the OTP from the "Request OTP" response above (dev-mode returns it directly instead of sending an SMS).
+# The OTP is never returned in the response (that would defeat the point of an OTP).
+# Until a real SMS gateway is wired up, check the running API's console/log output for a line like:
+#   "OTP for 9876543210: 123456"
 POST {{HostAddress}}/api/v1/auth/otp/verify
 Content-Type: application/json
 
 {
   "mobileNumber": "9876543210",
-  "otp": "REPLACE_WITH_OTP_FROM_REQUEST_RESPONSE"
+  "otp": "326609"
 }
 
 ### Refresh token
@@ -27,6 +37,14 @@ Content-Type: application/json
 
 {
   "refreshToken": "REPLACE_WITH_REFRESH_TOKEN"
+}
+
+### Request OTP for an unregistered mobile number (expect 404 Not Found)
+POST {{HostAddress}}/api/v1/auth/otp/request
+Content-Type: application/json
+
+{
+  "mobileNumber": "0000000000"
 }
 
 ### Verify OTP with wrong code (expect 400)
@@ -44,6 +62,16 @@ Content-Type: application/json
 
 {
   "refreshToken": "not-a-real-token"
+}
+
+### Add user with duplicate employee code (expect 409 Conflict)
+POST {{HostAddress}}/api/v1/user
+Content-Type: application/json
+
+{
+  "mobileNumber": "1111111111",
+  "name": "Someone Else",
+  "employeeCode": "EMP-001"
 }
 
 ### Get all users (never returns Otp/AccessToken/RefreshToken)

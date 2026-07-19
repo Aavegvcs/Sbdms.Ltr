@@ -12,7 +12,9 @@ public class VehicleController(
     AddVehicleHandler addVehicleHandler,
     UpdateVehicleHandler updateVehicleHandler,
     GetAllVehiclesHandler getAllVehiclesHandler,
-    GetVehicleByIdHandler getVehicleByIdHandler) : ApiController
+    GetVehicleByIdHandler getVehicleByIdHandler,
+    GetVehicleByQrCodeHandler getVehicleByQrCodeHandler,
+    GetVehicleQrImageHandler getVehicleQrImageHandler) : ApiController
 {
     [HttpPost]
     public async Task<IActionResult> AddVehicle([FromBody] AddVehicleRequest request)
@@ -43,5 +45,24 @@ public class VehicleController(
     {
         var response = await getVehicleByIdHandler.HandleAsync(id);
         return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
+    // Public: lets a scanning app show vehicle details right after a QR scan, before booking.
+    [HttpGet("qr/{qrCode}")]
+    public async Task<IActionResult> GetVehicleByQrCode(string qrCode)
+    {
+        var response = await getVehicleByQrCodeHandler.HandleAsync(qrCode);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
+    // Generates a printable QR code image encoding this vehicle's QrUniqueCode.
+    [HttpGet("{id:int}/qr-image")]
+    public async Task<IActionResult> GetVehicleQrImage(int id)
+    {
+        var result = await getVehicleQrImageHandler.HandleAsync(id);
+        if (result.IsError)
+            return Problem(result.Errors);
+
+        return File(result.Value, "image/png");
     }
 }

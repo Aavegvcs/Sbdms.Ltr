@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sbdms.Ltr.Infra.Data;
 
@@ -11,9 +12,11 @@ using Sbdms.Ltr.Infra.Data;
 namespace Sbdms.Ltr.Infra.Data.Migrations
 {
     [DbContext(typeof(LtrAppDbContext))]
-    partial class LtrAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260718193025_AddBookingTripPooling")]
+    partial class AddBookingTripPooling
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

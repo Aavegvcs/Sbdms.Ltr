@@ -1,6 +1,6 @@
+using Microsoft.Extensions.Logging;
 using Sbdms.Ltr.Contracts.User;
 using Sbdms.Ltr.Core.Common.Errors;
-using Sbdms.Ltr.Core.Domain;
 using Sbdms.Ltr.Core.Interface;
 using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
@@ -8,24 +8,13 @@ using Sbdms.SharedLibrary.ResultPattern;
 
 namespace Sbdms.Ltr.Core.Feature.Users;
 
-public class RequestOtpHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+public class RequestOtpHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, ILogger<RequestOtpHandler> logger)
 {
-    public async Task<Result<CoreResponse<string>>> HandleAsync(RequestOtpRequest request)
+    public async Task<Result<CoreResponse<bool>>> HandleAsync(RequestOtpRequest request)
     {
         var user = await userRepository.GetByAsync(u => u.MobileNumber == request.MobileNumber);
-
         if (user is null)
-        {
-            var duplicateEmployeeCode = await userRepository.GetByAsync(u => u.EmployeeCode == request.EmployeeCode);
-            if (duplicateEmployeeCode is not null)
-                return UserErrors.DuplicateEmployeeCode;
-
-            user = User.Create(request.MobileNumber, request.Name, request.EmployeeCode, DateTime.UtcNow);
-
-            var addResult = await userRepository.AddAsync(user);
-            if (addResult.IsError)
-                return addResult.Errors;
-        }
+            return UserErrors.UserNotFound;
 
         var otp = Random.Shared.Next(100000, 999999).ToString();
         user.SetOtp(otp, DateTime.UtcNow);
@@ -36,7 +25,10 @@ public class RequestOtpHandler(IUserRepository userRepository, IUnitOfWork unitO
 
         await unitOfWork.SaveChangesAsync();
 
-        // Dev/test convenience: the OTP is returned directly instead of being sent via SMS.
-        return new CoreResponse<string>(otp, true, "OTP generated successfully.");
+        // TODO: send via an actual SMS gateway. Until that's wired up, the OTP only ever
+        // appears in the server logs — it must never be returned in the API response.
+        logger.LogInformation("OTP for {MobileNumber}: {Otp}", request.MobileNumber, otp);
+
+        return new CoreResponse<bool>(true, true, "OTP sent successfully.");
     }
 }

@@ -1,0 +1,139 @@
+@HostAddress = http://localhost:5154
+
+### Look up a vehicle by its QR code (public — for showing details right after a scan)
+GET {{HostAddress}}/api/v1/vehicle/qr/QR-001
+Accept: application/json
+
+#####################################################################
+# Path A — new/unrecognized user scans the QR
+#####################################################################
+
+### Step 1: start guest booking (identifies or registers the user, sends OTP)
+POST {{HostAddress}}/api/v1/booking/guest/start
+Content-Type: application/json
+
+{
+  "qrCode": "QR-200",
+  "mobileNumber": "9810654125",
+  "name": "Test Guest",
+  "employeeCode": "EMP-101"
+}
+
+### Step 2: confirm — verify OTP, get logged in, and create the booking in one call
+# Check the running API's console/log for a line like "OTP for 7000000001: 123456" and paste it below.
+POST {{HostAddress}}/api/v1/booking/guest/confirm
+Content-Type: application/json
+
+{
+  "qrCode": "QR-200",
+  "mobileNumber": "9810654125",
+  "otp": "847777",
+  "purpose": "Airport pickup",
+  "startTime": "2026-07-19T09:00:00Z",
+  "endTime": "2026-07-19T11:00:00Z"
+}
+
+### Guest start with an unknown QR code (expect 404)
+POST {{HostAddress}}/api/v1/booking/guest/start
+Content-Type: application/json
+
+{
+  "qrCode": "QR-DOES-NOT-EXIST",
+  "mobileNumber": "7000000002",
+  "name": "Someone",
+  "employeeCode": "EMP-101"
+}
+
+#####################################################################
+# Path B — already-registered user, logs in once, then books directly
+#####################################################################
+
+### Log in (reuses the existing Auth flow — see Auth.Api.http)
+POST {{HostAddress}}/api/v1/auth/otp/request
+Content-Type: application/json
+
+{
+  "mobileNumber": "9876543210"
+}
+
+### Verify OTP to get an access token (check the log for the OTP)
+POST {{HostAddress}}/api/v1/auth/otp/verify
+Content-Type: application/json
+
+{
+  "mobileNumber": "9876543210",
+  "otp": "805246"
+}
+
+### Book directly using the access token from the response above
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiVXNlcklkIjoiMSIsIk1vYmlsZU51bWJlciI6Ijk4NzY1NDMyMTAiLCJFbXBsb3llZUNvZGUiOiJFTVAtMDAxIiwibmJmIjoxNzg0NDAxNzQ3LCJleHAiOjE3ODQ0MDUzNDcsImlhdCI6MTc4NDQwMTc0NywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MTU0IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MTU0In0.OkOH2Wc7Xk_hQGSpXPxVLUA9h4myXCszfqaCQX81wes
+
+POST {{HostAddress}}/api/v1/booking
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "qrCode": "QR-200",
+  "purpose": "Client visit",
+  "startTime": "2026-07-20T09:00:00Z",
+  "endTime": "2026-07-20T12:00:00Z"
+}
+
+### Book without a token (expect 401 Unauthorized)
+POST {{HostAddress}}/api/v1/booking
+Content-Type: application/json
+
+{
+  "qrCode": "QR-001",
+  "purpose": "Client visit",
+  "startTime": "2026-07-20T09:00:00Z",
+  "endTime": "2026-07-20T12:00:00Z"
+}
+
+#####################################################################
+# Shared-ride pooling (same vehicle, multiple riders)
+#####################################################################
+# Book the SAME qrCode twice with two different logged-in users (see Path B above for getting a token):
+#   - 2nd booking within 2 minutes of the 1st  -> pools in: same "tripId" in the response
+#   - 2nd booking 2-5 minutes after the last one -> rejected, 409 Booking.VehicleOccupied
+#   - 2nd booking more than 5 minutes after the last one -> starts a brand new trip;
+#     the previous trip's booking(s) flip to "Completed" automatically
+
+### Book vehicle as user A (starts a fresh trip — tripId in the response equals its own id)
+POST {{HostAddress}}/api/v1/booking
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "qrCode": "QR-001",
+  "purpose": "Trip A",
+  "startTime": "2026-07-20T09:00:00Z",
+  "endTime": "2026-07-20T10:00:00Z"
+}
+
+### Book vehicle as user B, right away (expect it to pool — same tripId as the booking above)
+# Use a different user's access token here.
+POST {{HostAddress}}/api/v1/booking
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "qrCode": "QR-001",
+  "purpose": "Trip B (sharing)",
+  "startTime": "2026-07-20T09:00:00Z",
+  "endTime": "2026-07-20T10:00:00Z"
+}
+
+#####################################################################
+# Reads
+#####################################################################
+
+### Get all bookings
+GET {{HostAddress}}/api/v1/booking
+Accept: application/json
+
+### Get booking by id
+@bookingId = 1
+
+GET {{HostAddress}}/api/v1/booking/{{bookingId}}
+Accept: application/json
