@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Sbdms.Ltr.Contracts.Booking;
 using Sbdms.Ltr.Core.Common.Errors;
 using Sbdms.Ltr.Core.Domain;
@@ -9,18 +8,23 @@ using Sbdms.SharedLibrary.ResultPattern;
 
 namespace Sbdms.Ltr.Core.Feature.Bookings;
 
-// Step 1 of the guest-scan flow: identify (or register) the user by mobile number and send an OTP.
+// "Scan QR as a new/unrecognized user" flow: identify (or register) the user by mobile number,
+// log them in, and create the booking — all in one call, no OTP.
 public class GuestStartBookingHandler(
     IVehicleRepository vehicleRepository,
     IUserRepository userRepository,
-    IUnitOfWork unitOfWork,
-    ILogger<GuestStartBookingHandler> logger)
+    IBookingRepository bookingRepository,
+    IJwtTokenGenerator jwtTokenGenerator,
+    IUnitOfWork unitOfWork)
 {
-    public async Task<Result<CoreResponse<bool>>> HandleAsync(GuestStartBookingRequest request)
+    public async Task<Result<CoreResponse<GuestBookingResponse>>> HandleAsync(GuestStartBookingRequest request)
     {
         var vehicle = await vehicleRepository.GetByAsync(v => v.QrUniqueCode == request.QrCode);
         if (vehicle is null)
             return BookingErrors.InvalidVehicle;
+
+        if (request.EndTime <= request.StartTime)
+            return BookingErrors.InvalidTimeRange;
 
         var user = await userRepository.GetByAsync(u => u.MobileNumber == request.MobileNumber);
 
@@ -37,18 +41,31 @@ public class GuestStartBookingHandler(
                 return addResult.Errors;
         }
 
-        var otp = Random.Shared.Next(100000, 999999).ToString();
-        user.SetOtp(otp, DateTime.UtcNow);
+        var now = DateTime.UtcNow;
 
-        var updateResult = await userRepository.UpdateAsync(user);
-        if (updateResult.IsError)
-            return updateResult.Errors;
+        var tripResult = await BookingTripResolver.ResolveAsync(bookingRepository, vehicle.Id, now);
+        if (tripResult.IsError)
+            return tripResult.Errors;
+
+        var accessToken = jwtTokenGenerator.GenerateAccessToken(user);
+        var refreshToken = jwtTokenGenerator.GenerateRefreshToken();
+        user.SetTokens(accessToken, refreshToken, now);
+
+        var userUpdateResult = await userRepository.UpdateAsync(user);
+        if (userUpdateResult.IsError)
+            return userUpdateResult.Errors;
+
+        var booking = Booking.Create(user.Id, vehicle.Id, tripResult.Value, request.Purpose, request.StartTime, request.EndTime, now);
+
+        var bookingResult = await bookingRepository.AddAsync(booking);
+        if (bookingResult.IsError)
+            return bookingResult.Errors;
 
         await unitOfWork.SaveChangesAsync();
 
-        // TODO: send via an actual SMS gateway — never return the OTP in the response.
-        logger.LogInformation("OTP for {MobileNumber}: {Otp}", request.MobileNumber, otp);
-
-        return new CoreResponse<bool>(true, true, "OTP sent successfully.");
+        return new CoreResponse<GuestBookingResponse>(
+            new GuestBookingResponse(booking.ToResponse(), accessToken, refreshToken),
+            true,
+            "Booking confirmed successfully.");
     }
 }

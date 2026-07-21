@@ -38,10 +38,11 @@ public static class Extensions
             .AddScoped<GetAllUsersHandler>()
             .AddScoped<GetUserByIdHandler>()
             .AddScoped<GuestStartBookingHandler>()
-            .AddScoped<GuestConfirmBookingHandler>()
             .AddScoped<CreateBookingHandler>()
             .AddScoped<GetAllBookingsHandler>()
-            .AddScoped<GetBookingByIdHandler>();
+            .AddScoped<GetBookingByIdHandler>()
+            .AddScoped<GetLatestBookingByUserHandler>()
+            .AddScoped<GetBookingHistoryByUserHandler>();
 
         return services;
     }

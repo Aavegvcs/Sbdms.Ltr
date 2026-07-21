@@ -8,26 +8,14 @@ Accept: application/json
 # Path A — new/unrecognized user scans the QR
 #####################################################################
 
-### Step 1: start guest booking (identifies or registers the user, sends OTP)
+### Identifies or registers the user by mobile number, logs them in, and creates the booking — no OTP.
 POST {{HostAddress}}/api/v1/booking/guest/start
 Content-Type: application/json
-
 {
   "qrCode": "QR-200",
   "mobileNumber": "9810654125",
   "name": "Test Guest",
-  "employeeCode": "EMP-101"
-}
-
-### Step 2: confirm — verify OTP, get logged in, and create the booking in one call
-# Check the running API's console/log for a line like "OTP for 7000000001: 123456" and paste it below.
-POST {{HostAddress}}/api/v1/booking/guest/confirm
-Content-Type: application/json
-
-{
-  "qrCode": "QR-200",
-  "mobileNumber": "9810654125",
-  "otp": "847777",
+  "employeeCode": "EMP-101",
   "purpose": "Airport pickup",
   "startTime": "2026-07-19T09:00:00Z",
   "endTime": "2026-07-19T11:00:00Z"
@@ -41,7 +29,10 @@ Content-Type: application/json
   "qrCode": "QR-DOES-NOT-EXIST",
   "mobileNumber": "7000000002",
   "name": "Someone",
-  "employeeCode": "EMP-101"
+  "employeeCode": "EMP-101",
+  "purpose": "Airport pickup",
+  "startTime": "2026-07-19T09:00:00Z",
+  "endTime": "2026-07-19T11:00:00Z"
 }
 
 #####################################################################
@@ -62,12 +53,11 @@ Content-Type: application/json
 
 {
   "mobileNumber": "9876543210",
-  "otp": "805246"
+  "otp": "852735"
 }
 
 ### Book directly using the access token from the response above
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiVXNlcklkIjoiMSIsIk1vYmlsZU51bWJlciI6Ijk4NzY1NDMyMTAiLCJFbXBsb3llZUNvZGUiOiJFTVAtMDAxIiwibmJmIjoxNzg0NDAxNzQ3LCJleHAiOjE3ODQ0MDUzNDcsImlhdCI6MTc4NDQwMTc0NywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MTU0IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MTU0In0.OkOH2Wc7Xk_hQGSpXPxVLUA9h4myXCszfqaCQX81wes
-
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiVXNlcklkIjoiMSIsIk1vYmlsZU51bWJlciI6Ijk4NzY1NDMyMTAiLCJFbXBsb3llZUNvZGUiOiJFTVAtMDAxIiwibmJmIjoxNzg0NjA5NTc0LCJleHAiOjE3ODQ2MTMxNzQsImlhdCI6MTc4NDYwOTU3NCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MTU0IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MTU0In0.Fpgp3WKr2CoOsZ1qKMFn1Iv48mpGH_09HAWHSJ9w7B4
 POST {{HostAddress}}/api/v1/booking
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
@@ -137,3 +127,13 @@ Accept: application/json
 
 GET {{HostAddress}}/api/v1/booking/{{bookingId}}
 Accept: application/json
+
+### Get the current user's latest booking (requires a token — see Path B above)
+GET {{HostAddress}}/api/v1/booking/me/latest
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### Get the current user's past booking history (requires a token — see Path B above)
+GET {{HostAddress}}/api/v1/booking/me/history
+Accept: application/json
+Authorization: Bearer {{accessToken}}

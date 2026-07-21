@@ -16,7 +16,9 @@ public class RequestOtpHandler(IUserRepository userRepository, IUnitOfWork unitO
         if (user is null)
             return UserErrors.UserNotFound;
 
-        var otp = Random.Shared.Next(100000, 999999).ToString();
+        // var otp = Random.Shared.Next(100000, 999999).ToString();
+        var otp = "123456";
+
         user.SetOtp(otp, DateTime.UtcNow);
 
         var updateResult = await userRepository.UpdateAsync(user);

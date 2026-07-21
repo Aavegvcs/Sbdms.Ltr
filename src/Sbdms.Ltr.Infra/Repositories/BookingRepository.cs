@@ -44,4 +44,10 @@ public class BookingRepository(LtrAppDbContext dbContext) : IBookingRepository
         await dbContext.Bookings
             .Where(b => b.Id == headId || b.TripId == headId)
             .ToListAsync();
+
+    public async Task<Booking?> GetLatestByUserAsync(int userId) =>
+        await dbContext.Bookings
+            .Where(b => b.UserId == userId)
+            .OrderByDescending(b => b.BookedOn)
+            .FirstOrDefaultAsync();
 }

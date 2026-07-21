@@ -11,26 +11,19 @@ namespace Sbdms.Ltr.Api.Controllers.v1;
 [ApiVersion("1.0")]
 public class BookingController(
     GuestStartBookingHandler guestStartBookingHandler,
-    GuestConfirmBookingHandler guestConfirmBookingHandler,
     CreateBookingHandler createBookingHandler,
     GetAllBookingsHandler getAllBookingsHandler,
-    GetBookingByIdHandler getBookingByIdHandler) : ApiController
+    GetBookingByIdHandler getBookingByIdHandler,
+    GetLatestBookingByUserHandler getLatestBookingByUserHandler,
+    GetBookingHistoryByUserHandler getBookingHistoryByUserHandler) : ApiController
 {
-    // Path A, step 1 — new/unrecognized user scans the QR: identify/register by mobile number, send OTP.
+    // Path A — new/unrecognized user scans the QR: identify/register by mobile number, log them
+    // in, and create the booking, all in one call. No OTP.
     [HttpPost("guest/start")]
     [AllowAnonymous]
     public async Task<IActionResult> GuestStart([FromBody] GuestStartBookingRequest request)
     {
         var response = await guestStartBookingHandler.HandleAsync(request);
-        return response.Match(result => Ok(response.Value), errors => Problem(errors));
-    }
-
-    // Path A, step 2 — verify OTP, log the user in, and create the booking in one step.
-    [HttpPost("guest/confirm")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GuestConfirm([FromBody] GuestConfirmBookingRequest request)
-    {
-        var response = await guestConfirmBookingHandler.HandleAsync(request);
         return response.Match(result => Ok(response.Value), errors => Problem(errors));
     }
 
@@ -44,6 +37,32 @@ public class BookingController(
             return Unauthorized();
 
         var response = await createBookingHandler.HandleAsync(userId, request);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
+    // The current user's most recent booking (whatever its status).
+    [HttpGet("me/latest")]
+    [Authorize]
+    public async Task<IActionResult> GetMyLatestBooking()
+    {
+        var userIdClaim = User.FindFirst("UserId")?.Value;
+        if (!int.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var response = await getLatestBookingByUserHandler.HandleAsync(userId);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
+    // The current user's past (completed/cancelled) bookings, most recent first.
+    [HttpGet("me/history")]
+    [Authorize]
+    public async Task<IActionResult> GetMyBookingHistory()
+    {
+        var userIdClaim = User.FindFirst("UserId")?.Value;
+        if (!int.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var response = await getBookingHistoryByUserHandler.HandleAsync(userId);
         return response.Match(result => Ok(response.Value), errors => Problem(errors));
     }
 

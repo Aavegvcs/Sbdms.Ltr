@@ -18,4 +18,8 @@ public interface IBookingRepository
 
     // Every booking belonging to the trip headed by headId — the head itself plus all co-riders.
     Task<IEnumerable<Booking>> GetTripMembersAsync(int headId);
+
+    // The most recent booking made by this user, tracked (so stale-trip reconciliation can be
+    // saved through the same instance without needing a re-fetch).
+    Task<Booking?> GetLatestByUserAsync(int userId);
 }
