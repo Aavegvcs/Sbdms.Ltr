@@ -1,5 +1,4 @@
 using Sbdms.Ltr.Contracts.User;
-using Sbdms.Ltr.Core.Common.Errors;
 using Sbdms.Ltr.Core.Domain;
 using Sbdms.Ltr.Core.Interface;
 using Sbdms.SharedLibrary.ApiResponse;
@@ -12,10 +11,6 @@ public class AddUserHandler(IUserRepository userRepository, IUnitOfWork unitOfWo
 {
     public async Task<Result<CoreResponse<UserResponse>>> HandleAsync(AddUserRequest request)
     {
-        var duplicateEmployeeCode = await userRepository.GetByAsync(u => u.EmployeeCode == request.EmployeeCode);
-        if (duplicateEmployeeCode is not null)
-            return UserErrors.DuplicateEmployeeCode;
-
         var user = User.Create(request.MobileNumber, request.Name, request.EmployeeCode, DateTime.UtcNow);
 
         var result = await userRepository.AddAsync(user);

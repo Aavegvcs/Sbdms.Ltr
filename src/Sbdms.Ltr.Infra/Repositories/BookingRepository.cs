@@ -36,7 +36,9 @@ public class BookingRepository(LtrAppDbContext dbContext) : IBookingRepository
 
     public async Task<Booking?> GetActiveTripHeadAsync(int vehicleId) =>
         await dbContext.Bookings
-            .Where(b => b.VehicleId == vehicleId && b.TripId == null && b.Status == BookingStatus.Started)
+            .Where(b => b.VehicleId == vehicleId
+                && (b.TripId == null || b.TripId == b.Id)
+                && b.Status == BookingStatus.Started)
             .OrderByDescending(b => b.LastActivityOn)
             .FirstOrDefaultAsync();
 

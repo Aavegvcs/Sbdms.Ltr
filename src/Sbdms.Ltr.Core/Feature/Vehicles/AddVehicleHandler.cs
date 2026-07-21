@@ -10,6 +10,7 @@ namespace Sbdms.Ltr.Core.Feature.Vehicles;
 
 public class AddVehicleHandler(
     IVehicleRepository vehicleRepository,
+    IVendorRepository vendorRepository,
     IVehicleTypeRepository vehicleTypeRepository,
     ICurrentStatusRepository currentStatusRepository,
     IDriverRepository driverRepository,
@@ -17,6 +18,10 @@ public class AddVehicleHandler(
 {
     public async Task<Result<CoreResponse<VehicleResponse>>> HandleAsync(AddVehicleRequest request)
     {
+        var vendor = await vendorRepository.GetByAsync(v => v.Id == request.VendorId);
+        if (vendor is null)
+            return VehicleErrors.InvalidVendor;
+
         var vehicleType = await vehicleTypeRepository.GetByAsync(vt => vt.Id == request.VehicleTypeCode);
         if (vehicleType is null)
             return VehicleErrors.InvalidVehicleType;
@@ -32,7 +37,16 @@ public class AddVehicleHandler(
                 return VehicleErrors.InvalidDriver;
         }
 
-        var vehicle = Vehicle.Create(request.VehicleTypeCode, request.DriverId, request.CurrentStatusId, request.QrUniqueCode, DateTime.UtcNow);
+        var vehicle = Vehicle.Create(
+            request.VendorId,
+            request.VehicleTypeCode,
+            request.DriverId,
+            request.CurrentStatusId,
+            request.VehicleNumber,
+            request.VehicleCompany,
+            request.Modal,
+            request.QrUniqueCode,
+            DateTime.UtcNow);
 
         var result = await vehicleRepository.AddAsync(vehicle);
         if (result.IsError)

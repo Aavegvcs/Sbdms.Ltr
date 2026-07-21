@@ -13,7 +13,8 @@ public interface IBookingRepository
     Task<IEnumerable<Booking>> GetAllAsync();
     Task<Booking?> GetByAsync(Expression<Func<Booking, bool>> predicate);
 
-    // The trip "head" (TripId == null) currently in progress for this vehicle, if any.
+    // The trip "head" (TripId == Id, or null on legacy rows predating that convention)
+    // currently in progress for this vehicle, if any.
     Task<Booking?> GetActiveTripHeadAsync(int vehicleId);
 
     // Every booking belonging to the trip headed by headId — the head itself plus all co-riders.

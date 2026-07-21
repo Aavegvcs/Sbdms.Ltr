@@ -11,15 +11,20 @@ GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}
 Accept: application/json
 
 ### Add vehicle
+# vendorId must be an existing Vendor.Id (create via Vendor.Api.http — Id 1 is seeded by the AddVendorAndVehicleDetails migration),
 # vehicleTypeCode must be an existing VehicleType.VehicleTypeCode, currentStatusId an existing CurrentStatus.Id,
 # driverId (optional) an existing Driver.Id (create these first via VehicleType/CurrentStatus/Driver .http files)
 POST {{HostAddress}}/api/v1/vehicle
 Content-Type: application/json
 
 {
+  "vendorId": 1,
   "vehicleTypeCode": 1,
   "driverId": null,
   "currentStatusId": 1,
+  "vehicleNumber": "DL-01-AB-1234",
+  "vehicleCompany": "Toyota",
+  "modal": "Innova",
   "qrUniqueCode": "QR-001"
 }
 
@@ -30,9 +35,13 @@ Content-Type: application/json
 
 {
   "id": {{vehicleId}},
+  "vendorId": 1,
   "vehicleTypeCode": 1,
   "driverId": 1,
   "currentStatusId": 1,
+  "vehicleNumber": "DL-01-AB-1234",
+  "vehicleCompany": "Toyota",
+  "modal": "Innova Crysta",
   "qrUniqueCode": "QR-001-UPDATED"
 }
 
@@ -41,9 +50,13 @@ POST {{HostAddress}}/api/v1/vehicle
 Content-Type: application/json
 
 {
+  "vendorId": 1,
   "vehicleTypeCode": 1,
   "driverId": null,
   "currentStatusId": 1,
+  "vehicleNumber": "DL-01-AB-5678",
+  "vehicleCompany": "Toyota",
+  "modal": "Innova",
   "qrUniqueCode": "QR-001-UPDATED"
 }
 
@@ -52,9 +65,13 @@ POST {{HostAddress}}/api/v1/vehicle
 Content-Type: application/json
 
 {
+  "vendorId": 1,
   "vehicleTypeCode": 999,
   "driverId": null,
   "currentStatusId": 1,
+  "vehicleNumber": "DL-01-AB-5678",
+  "vehicleCompany": "Toyota",
+  "modal": "Innova",
   "qrUniqueCode": "QR-002"
 }
 
@@ -63,20 +80,77 @@ POST {{HostAddress}}/api/v1/vehicle
 Content-Type: application/json
 
 {
+  "vendorId": 1,
   "vehicleTypeCode": 1,
   "driverId": 999,
   "currentStatusId": 1,
+  "vehicleNumber": "DL-01-AB-5678",
+  "vehicleCompany": "Toyota",
+  "modal": "Innova",
   "qrUniqueCode": "QR-003"
+}
+
+### Add vehicle with unknown vendorId (expect 400 validation error)
+POST {{HostAddress}}/api/v1/vehicle
+Content-Type: application/json
+
+{
+  "vendorId": 999,
+  "vehicleTypeCode": 1,
+  "driverId": null,
+  "currentStatusId": 1,
+  "vehicleNumber": "DL-01-AB-5678",
+  "vehicleCompany": "Toyota",
+  "modal": "Innova",
+  "qrUniqueCode": "QR-004"
 }
 
 ### Get vehicle by unknown id (expect 404 Not Found)
 GET {{HostAddress}}/api/v1/vehicle/999999
 Accept: application/json
 
-### Get vehicle by QR code (public — used right after a scan)
-GET {{HostAddress}}/api/v1/vehicle/qr/QR-001
+### Get vehicle + driver details by QR code (public — used right after a scan)
+# Response shape: { "vehicle": { ...VehicleResponse }, "driver": { ...DriverResponse } | null }
+# driver is null if the vehicle has no driverId assigned.
+GET {{HostAddress}}/api/v1/vehicle/qr/QR-455c43ae51274cbfa
 Accept: application/json
 
 ### Get a printable QR code image for a vehicle (returns image/png)
 # In VS Code / Visual Studio's REST client this renders inline as an image.
 GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/qr-image
+
+### Regenerate this vehicle's QR code — old code stops resolving, response has the new one
+POST {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/qr/regenerate
+
+#####################################################################
+# Change vehicle-driver pairing (logs the old mapping before overwriting it)
+#####################################################################
+
+### Reassign this vehicle to a different driver
+# Response is the updated vehicle; the mapping being replaced is snapshotted into
+# VehicleDriverAssignmentLogs first.
+PUT {{HostAddress}}/api/v1/vehicle/2/driver
+Content-Type: application/json
+
+{
+  "driverId": 1
+}
+
+### Unassign this vehicle's driver entirely
+PUT {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/driver
+Content-Type: application/json
+
+{
+  "driverId": null
+}
+
+### Reassign with an unknown driverId (expect 400 validation error)
+PUT {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/driver
+Content-Type: application/json
+
+{
+  "driverId": 999999
+}
+
+### View this vehicle's driver re-assignment history, most recent first
+GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/driver-history

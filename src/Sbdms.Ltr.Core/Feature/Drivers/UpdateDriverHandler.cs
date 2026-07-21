@@ -9,6 +9,7 @@ namespace Sbdms.Ltr.Core.Feature.Drivers;
 
 public class UpdateDriverHandler(
     IDriverRepository driverRepository,
+    IVendorRepository vendorRepository,
     ICurrentStatusRepository currentStatusRepository,
     IUnitOfWork unitOfWork)
 {
@@ -17,6 +18,10 @@ public class UpdateDriverHandler(
         var existing = await driverRepository.FindByIdAsync(request.Id);
         if (existing.IsError)
             return existing.Errors;
+
+        var vendor = await vendorRepository.GetByAsync(v => v.Id == request.VendorId);
+        if (vendor is null)
+            return DriverErrors.InvalidVendor;
 
         var currentStatus = await currentStatusRepository.GetByAsync(cs => cs.Id == request.CurrentStatusId);
         if (currentStatus is null)
@@ -28,7 +33,7 @@ public class UpdateDriverHandler(
             return DriverErrors.DuplicateLicenceNumber;
 
         var driver = existing.Value;
-        driver.Update(request.DriverName, request.DriverNumber, request.Dob, request.LicenceNumber, request.CurrentStatusId, DateTime.UtcNow);
+        driver.Update(request.VendorId, request.DriverName, request.DriverNumber, request.Dob, request.LicenceNumber, request.CurrentStatusId, DateTime.UtcNow);
 
         var result = await driverRepository.UpdateAsync(driver);
         if (result.IsError)

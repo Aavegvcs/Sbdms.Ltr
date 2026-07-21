@@ -8,6 +8,10 @@ public record GuestStartBookingRequest(
     string Name,
     string EmployeeCode,
     string? Purpose,
+    decimal PickLatitude,
+    decimal PickLongitude,
+    decimal DropLatitude,
+    decimal DropLongitude,
     DateTime StartTime,
     DateTime EndTime
 );

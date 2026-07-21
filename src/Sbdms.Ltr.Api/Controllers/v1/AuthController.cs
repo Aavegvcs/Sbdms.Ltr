@@ -11,8 +11,18 @@ namespace Sbdms.Ltr.Api.Controllers.v1;
 public class AuthController(
     RequestOtpHandler requestOtpHandler,
     VerifyOtpHandler verifyOtpHandler,
-    RefreshTokenHandler refreshTokenHandler) : ApiController
+    RefreshTokenHandler refreshTokenHandler,
+    LoginOrRegisterHandler loginOrRegisterHandler) : ApiController
 {
+    // Logs in an existing user by mobile number, or registers a new one from
+    // Name/EmployeeCode if the mobile number isn't recognized. No OTP either way.
+    [HttpPost("login")]
+    public async Task<IActionResult> LoginOrRegister([FromBody] LoginOrRegisterRequest request)
+    {
+        var response = await loginOrRegisterHandler.HandleAsync(request);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
     [HttpPost("otp/request")]
     public async Task<IActionResult> RequestOtp([FromBody] RequestOtpRequest request)
     {

@@ -41,7 +41,8 @@ public static class BookingTripResolver
             return;
 
         var headId = booking.TripId ?? booking.Id;
-        var head = booking.TripId is null ? booking : await bookingRepository.GetByAsync(b => b.Id == headId);
+        var isHead = booking.TripId is null || booking.TripId == booking.Id;
+        var head = isHead ? booking : await bookingRepository.GetByAsync(b => b.Id == headId);
         if (head is null || !BookingTripPolicy.IsStale(head.LastActivityOn, now))
             return;
 

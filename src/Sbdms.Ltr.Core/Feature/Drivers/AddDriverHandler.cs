@@ -10,16 +10,21 @@ namespace Sbdms.Ltr.Core.Feature.Drivers;
 
 public class AddDriverHandler(
     IDriverRepository driverRepository,
+    IVendorRepository vendorRepository,
     ICurrentStatusRepository currentStatusRepository,
     IUnitOfWork unitOfWork)
 {
     public async Task<Result<CoreResponse<DriverResponse>>> HandleAsync(AddDriverRequest request)
     {
+        var vendor = await vendorRepository.GetByAsync(v => v.Id == request.VendorId);
+        if (vendor is null)
+            return DriverErrors.InvalidVendor;
+
         var currentStatus = await currentStatusRepository.GetByAsync(cs => cs.Id == request.CurrentStatusId);
         if (currentStatus is null)
             return DriverErrors.InvalidCurrentStatus;
 
-        var driver = Driver.Create(request.DriverName, request.DriverNumber, request.Dob, request.LicenceNumber, request.CurrentStatusId, DateTime.UtcNow);
+        var driver = Driver.Create(request.VendorId, request.DriverName, request.DriverNumber, request.Dob, request.LicenceNumber, request.CurrentStatusId, DateTime.UtcNow);
 
         var result = await driverRepository.AddAsync(driver);
         if (result.IsError)

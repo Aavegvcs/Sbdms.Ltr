@@ -18,4 +18,7 @@ public static class VehicleErrors
 
     public static readonly Error InvalidDriver =
         Error.Validation("Vehicle.InvalidDriver", "The specified driver does not exist.");
+
+    public static readonly Error InvalidVendor =
+        Error.Validation("Vehicle.InvalidVendor", "The specified vendor does not exist.");
 }

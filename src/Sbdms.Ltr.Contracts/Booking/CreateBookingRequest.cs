@@ -4,6 +4,10 @@ namespace Sbdms.Ltr.Contracts.Booking;
 public record CreateBookingRequest(
     string QrCode,
     string? Purpose,
+    decimal PickLatitude,
+    decimal PickLongitude,
+    decimal DropLatitude,
+    decimal DropLongitude,
     DateTime StartTime,
     DateTime EndTime
 );

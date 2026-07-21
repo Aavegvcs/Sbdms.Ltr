@@ -5,6 +5,7 @@ using Sbdms.Ltr.Core.Feature.Drivers;
 using Sbdms.Ltr.Core.Feature.Users;
 using Sbdms.Ltr.Core.Feature.VehicleTypes;
 using Sbdms.Ltr.Core.Feature.Vehicles;
+using Sbdms.Ltr.Core.Feature.Vendors;
 
 namespace Sbdms.Ltr.Core;
 
@@ -19,6 +20,13 @@ public static class Extensions
             .AddScoped<GetVehicleByIdHandler>()
             .AddScoped<GetVehicleByQrCodeHandler>()
             .AddScoped<GetVehicleQrImageHandler>()
+            .AddScoped<RegenerateVehicleQrCodeHandler>()
+            .AddScoped<ChangeVehicleDriverHandler>()
+            .AddScoped<GetVehicleDriverHistoryHandler>()
+            .AddScoped<AddVendorHandler>()
+            .AddScoped<UpdateVendorHandler>()
+            .AddScoped<GetAllVendorsHandler>()
+            .AddScoped<GetVendorByIdHandler>()
             .AddScoped<AddVehicleTypeHandler>()
             .AddScoped<UpdateVehicleTypeHandler>()
             .AddScoped<GetAllVehicleTypesHandler>()
@@ -37,6 +45,8 @@ public static class Extensions
             .AddScoped<RefreshTokenHandler>()
             .AddScoped<GetAllUsersHandler>()
             .AddScoped<GetUserByIdHandler>()
+            .AddScoped<GetUserByMobileNumberHandler>()
+            .AddScoped<LoginOrRegisterHandler>()
             .AddScoped<GuestStartBookingHandler>()
             .AddScoped<CreateBookingHandler>()
             .AddScoped<GetAllBookingsHandler>()

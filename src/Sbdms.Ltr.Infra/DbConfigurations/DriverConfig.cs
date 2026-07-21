@@ -30,6 +30,11 @@ public class DriverConfig : IEntityTypeConfiguration<Driver>
         builder.Property(x => x.Dob).IsRequired();
         builder.Property(x => x.CreatedOn).IsRequired();
 
+        builder.HasOne<Vendor>()
+            .WithMany()
+            .HasForeignKey(x => x.VendorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne<CurrentStatus>()
             .WithMany()
             .HasForeignKey(x => x.CurrentStatusId)

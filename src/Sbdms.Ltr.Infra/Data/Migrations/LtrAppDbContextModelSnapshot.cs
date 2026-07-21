@@ -33,14 +33,39 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
                     b.Property<DateTime>("BookedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("DriverName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DriverNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<decimal>("DropLatitude")
+                        .HasColumnType("decimal(9,6)");
+
+                    b.Property<decimal>("DropLongitude")
+                        .HasColumnType("decimal(9,6)");
+
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("LastActivityOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Modal")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal>("PickLatitude")
+                        .HasColumnType("decimal(9,6)");
+
+                    b.Property<decimal>("PickLongitude")
+                        .HasColumnType("decimal(9,6)");
 
                     b.Property<string>("Purpose")
                         .HasMaxLength(200)
@@ -62,6 +87,11 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
+
+                    b.Property<string>("VehicleNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
@@ -154,12 +184,17 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("VendorId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CurrentStatusId");
 
                     b.HasIndex("LicenceNumber")
                         .IsUnique();
+
+                    b.HasIndex("VendorId");
 
                     b.ToTable("Drivers", (string)null);
                 });
@@ -240,6 +275,11 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
                     b.Property<int?>("DriverId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Modal")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
@@ -248,7 +288,20 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("VehicleCompany")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("VehicleNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<int>("VehicleTypeCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VendorId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -262,7 +315,66 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
 
                     b.HasIndex("VehicleTypeCode");
 
+                    b.HasIndex("VendorId");
+
                     b.ToTable("Vehicles", (string)null);
+                });
+
+            modelBuilder.Entity("Sbdms.Ltr.Core.Domain.VehicleDriverAssignmentLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Modal")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("NewDriverId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OldDriverId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OldDriverName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("OldDriverNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("OldLicenceNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("VehicleCompany")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VehicleNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("VendorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("VehicleDriverAssignmentLogs", (string)null);
                 });
 
             modelBuilder.Entity("Sbdms.Ltr.Core.Domain.VehicleType", b =>
@@ -320,6 +432,46 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
                     b.ToTable("VehicleType", (string)null);
                 });
 
+            modelBuilder.Entity("Sbdms.Ltr.Core.Domain.Vendor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ContactNumber")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Vendors", (string)null);
+                });
+
             modelBuilder.Entity("Sbdms.Ltr.Core.Domain.Booking", b =>
                 {
                     b.HasOne("Sbdms.Ltr.Core.Domain.Booking", null)
@@ -347,6 +499,12 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
                         .HasForeignKey("CurrentStatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Sbdms.Ltr.Core.Domain.Vendor", null)
+                        .WithMany()
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Sbdms.Ltr.Core.Domain.Vehicle", b =>
@@ -365,6 +523,12 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
                     b.HasOne("Sbdms.Ltr.Core.Domain.VehicleType", null)
                         .WithMany()
                         .HasForeignKey("VehicleTypeCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Sbdms.Ltr.Core.Domain.Vendor", null)
+                        .WithMany()
+                        .HasForeignKey("VendorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

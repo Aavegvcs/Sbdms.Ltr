@@ -19,6 +19,22 @@ public class BookingConfig : IEntityTypeConfiguration<Booking>
 
         builder.Property(x => x.Purpose).HasMaxLength(200);
 
+        builder.Property(x => x.VehicleNumber)
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.Property(x => x.Modal)
+            .HasMaxLength(100)
+            .IsRequired();
+
+        builder.Property(x => x.DriverNumber).HasMaxLength(20);
+        builder.Property(x => x.DriverName).HasMaxLength(100);
+
+        builder.Property(x => x.PickLatitude).HasColumnType("decimal(9,6)");
+        builder.Property(x => x.PickLongitude).HasColumnType("decimal(9,6)");
+        builder.Property(x => x.DropLatitude).HasColumnType("decimal(9,6)");
+        builder.Property(x => x.DropLongitude).HasColumnType("decimal(9,6)");
+
         builder.Property(x => x.StartTime).IsRequired();
         builder.Property(x => x.EndTime).IsRequired();
         builder.Property(x => x.BookedOn).IsRequired();
@@ -36,7 +52,8 @@ public class BookingConfig : IEntityTypeConfiguration<Booking>
             .HasForeignKey(x => x.VehicleId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Self-referencing: TripId points at the head booking's Id (null means this row is the head).
+        // Self-referencing: for the head/first rider, TripId equals its own Id; for a pooled
+        // co-rider, it points at the head's Id instead.
         builder.HasOne<Booking>()
             .WithMany()
             .HasForeignKey(x => x.TripId)

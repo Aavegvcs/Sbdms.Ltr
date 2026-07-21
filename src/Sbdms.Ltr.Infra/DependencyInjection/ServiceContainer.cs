@@ -19,11 +19,13 @@ public static class ServiceContainer
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<IVendorRepository, VendorRepository>();
         services.AddScoped<IVehicleTypeRepository, VehicleTypeRepository>();
         services.AddScoped<ICurrentStatusRepository, CurrentStatusRepository>();
         services.AddScoped<IDriverRepository, DriverRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IVehicleDriverAssignmentLogRepository, VehicleDriverAssignmentLogRepository>();
 
         services.Configure<JwtOptions>(config.GetSection(JwtOptions.SectionName));
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();

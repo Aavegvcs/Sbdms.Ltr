@@ -12,6 +12,7 @@ namespace Sbdms.Ltr.Core.Feature.Bookings;
 // log them in, and create the booking — all in one call, no OTP.
 public class GuestStartBookingHandler(
     IVehicleRepository vehicleRepository,
+    IDriverRepository driverRepository,
     IUserRepository userRepository,
     IBookingRepository bookingRepository,
     IJwtTokenGenerator jwtTokenGenerator,
@@ -26,6 +27,10 @@ public class GuestStartBookingHandler(
         if (request.EndTime <= request.StartTime)
             return BookingErrors.InvalidTimeRange;
 
+        var driver = vehicle.DriverId is not null
+            ? await driverRepository.GetByAsync(d => d.Id == vehicle.DriverId)
+            : null;
+
         var user = await userRepository.GetByAsync(u => u.MobileNumber == request.MobileNumber);
 
         if (user is null)
@@ -35,6 +40,10 @@ public class GuestStartBookingHandler(
             var addResult = await userRepository.AddAsync(user);
             if (addResult.IsError)
                 return addResult.Errors;
+
+            // Flush now so user.Id is actually assigned before it's used as the booking's
+            // UserId (and baked into the token) below.
+            await unitOfWork.SaveChangesAsync();
         }
 
         var now = DateTime.UtcNow;
@@ -51,13 +60,36 @@ public class GuestStartBookingHandler(
         if (userUpdateResult.IsError)
             return userUpdateResult.Errors;
 
-        var booking = Booking.Create(user.Id, vehicle.Id, tripResult.Value, request.Purpose, request.StartTime, request.EndTime, now);
+        var booking = Booking.Create(
+            user.Id,
+            vehicle.Id,
+            tripResult.Value,
+            vehicle.VehicleNumber,
+            vehicle.Modal,
+            driver?.DriverNumber,
+            driver?.DriverName,
+            request.PickLatitude,
+            request.PickLongitude,
+            request.DropLatitude,
+            request.DropLongitude,
+            request.Purpose,
+            request.StartTime,
+            request.EndTime,
+            now);
 
         var bookingResult = await bookingRepository.AddAsync(booking);
         if (bookingResult.IsError)
             return bookingResult.Errors;
 
         await unitOfWork.SaveChangesAsync();
+
+        if (tripResult.Value is null)
+        {
+            // Fresh trip: booking.Id is only known now, so stamp TripId with it in a second save.
+            // booking is still tracked from AddAsync, so EF picks up this change on its own.
+            booking.AssignAsTripHead();
+            await unitOfWork.SaveChangesAsync();
+        }
 
         return new CoreResponse<GuestBookingResponse>(
             new GuestBookingResponse(booking.ToResponse(), accessToken, refreshToken),

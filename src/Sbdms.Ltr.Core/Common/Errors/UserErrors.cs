@@ -7,9 +7,6 @@ public static class UserErrors
     public static readonly Error UserNotFound =
         Error.NotFound("User.NotFound", "User was not found.");
 
-    public static readonly Error DuplicateEmployeeCode =
-        Error.Conflict("User.DuplicateEmployeeCode", "A user with this employee code already exists.");
-
     public static readonly Error DuplicateMobileNumber =
         Error.Conflict("User.DuplicateMobileNumber", "A user with this mobile number already exists.");
 

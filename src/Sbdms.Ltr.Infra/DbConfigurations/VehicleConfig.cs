@@ -12,6 +12,18 @@ public class VehicleConfig : IEntityTypeConfiguration<Vehicle>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.VehicleNumber)
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.Property(x => x.VehicleCompany)
+            .HasMaxLength(100)
+            .IsRequired();
+
+        builder.Property(x => x.Modal)
+            .HasMaxLength(100)
+            .IsRequired();
+
         builder.Property(x => x.QrUniqueCode)
             .HasMaxLength(100)
             .IsRequired();
@@ -21,6 +33,11 @@ public class VehicleConfig : IEntityTypeConfiguration<Vehicle>
 
         builder.Property(x => x.CreatedOn)
             .IsRequired();
+
+        builder.HasOne<Vendor>()
+            .WithMany()
+            .HasForeignKey(x => x.VendorId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<VehicleType>()
             .WithMany()

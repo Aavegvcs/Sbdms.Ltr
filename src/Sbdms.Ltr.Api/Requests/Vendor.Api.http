@@ -1,0 +1,41 @@
+@HostAddress = http://localhost:5154
+
+### Get all vendors (the AddVendorAndVehicleDetails migration seeds one: Id 1, "Default Vendor")
+GET {{HostAddress}}/api/v1/vendor
+Accept: application/json
+
+### Get vendor by id (int, auto-incremented)
+@vendorId = 1
+
+GET {{HostAddress}}/api/v1/vendor/{{vendorId}}
+Accept: application/json
+
+### Add vendor
+POST {{HostAddress}}/api/v1/vendor
+Content-Type: application/json
+
+{
+  "name": "Acme Fleet Services",
+  "contactNumber": "9810000000",
+  "email": "contact@acmefleet.example",
+  "address": "123 Industrial Area, New Delhi",
+  "isActive": true
+}
+
+### Update vendor
+# Replace {{vendorId}} above with the id returned from "Add vendor" before running this.
+PUT {{HostAddress}}/api/v1/vendor/{{vendorId}}
+Content-Type: application/json
+
+{
+  "id": {{vendorId}},
+  "name": "Acme Fleet Services Pvt Ltd",
+  "contactNumber": "9810000001",
+  "email": "contact@acmefleet.example",
+  "address": "123 Industrial Area, New Delhi",
+  "isActive": true
+}
+
+### Get vendor by unknown id (expect 404 Not Found)
+GET {{HostAddress}}/api/v1/vendor/999999
+Accept: application/json

@@ -14,7 +14,10 @@ public class VehicleController(
     GetAllVehiclesHandler getAllVehiclesHandler,
     GetVehicleByIdHandler getVehicleByIdHandler,
     GetVehicleByQrCodeHandler getVehicleByQrCodeHandler,
-    GetVehicleQrImageHandler getVehicleQrImageHandler) : ApiController
+    GetVehicleQrImageHandler getVehicleQrImageHandler,
+    RegenerateVehicleQrCodeHandler regenerateVehicleQrCodeHandler,
+    ChangeVehicleDriverHandler changeVehicleDriverHandler,
+    GetVehicleDriverHistoryHandler getVehicleDriverHistoryHandler) : ApiController
 {
     [HttpPost]
     public async Task<IActionResult> AddVehicle([FromBody] AddVehicleRequest request)
@@ -64,5 +67,30 @@ public class VehicleController(
             return Problem(result.Errors);
 
         return File(result.Value, "image/png");
+    }
+
+    // Rotates this vehicle's QrUniqueCode to a new value — the old QR sticker stops working.
+    [HttpPost("{id:int}/qr/regenerate")]
+    public async Task<IActionResult> RegenerateVehicleQrCode(int id)
+    {
+        var response = await regenerateVehicleQrCodeHandler.HandleAsync(id);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
+    // Re-pairs this vehicle with a (possibly different, possibly no) driver. The mapping being
+    // replaced is snapshotted into VehicleDriverAssignmentLogs before it's overwritten.
+    [HttpPut("{id:int}/driver")]
+    public async Task<IActionResult> ChangeVehicleDriver(int id, [FromBody] ChangeVehicleDriverRequest request)
+    {
+        var response = await changeVehicleDriverHandler.HandleAsync(id, request);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
+    // History of this vehicle's driver re-assignments, most recent first.
+    [HttpGet("{id:int}/driver-history")]
+    public async Task<IActionResult> GetVehicleDriverHistory(int id)
+    {
+        var response = await getVehicleDriverHistoryHandler.HandleAsync(id);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
     }
 }

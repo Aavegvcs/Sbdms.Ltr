@@ -9,6 +9,7 @@ namespace Sbdms.Ltr.Core.Feature.Vehicles;
 
 public class UpdateVehicleHandler(
     IVehicleRepository vehicleRepository,
+    IVendorRepository vendorRepository,
     IVehicleTypeRepository vehicleTypeRepository,
     ICurrentStatusRepository currentStatusRepository,
     IDriverRepository driverRepository,
@@ -19,6 +20,10 @@ public class UpdateVehicleHandler(
         var existing = await vehicleRepository.FindByIdAsync(request.Id);
         if (existing.IsError)
             return existing.Errors;
+
+        var vendor = await vendorRepository.GetByAsync(v => v.Id == request.VendorId);
+        if (vendor is null)
+            return VehicleErrors.InvalidVendor;
 
         var vehicleType = await vehicleTypeRepository.GetByAsync(vt => vt.Id == request.VehicleTypeCode);
         if (vehicleType is null)
@@ -41,7 +46,16 @@ public class UpdateVehicleHandler(
             return VehicleErrors.DuplicateQrCode;
 
         var vehicle = existing.Value;
-        vehicle.Update(request.VehicleTypeCode, request.DriverId, request.CurrentStatusId, request.QrUniqueCode, DateTime.UtcNow);
+        vehicle.Update(
+            request.VendorId,
+            request.VehicleTypeCode,
+            request.DriverId,
+            request.CurrentStatusId,
+            request.VehicleNumber,
+            request.VehicleCompany,
+            request.Modal,
+            request.QrUniqueCode,
+            DateTime.UtcNow);
 
         var result = await vehicleRepository.UpdateAsync(vehicle);
         if (result.IsError)

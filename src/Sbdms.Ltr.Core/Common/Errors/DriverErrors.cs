@@ -12,4 +12,7 @@ public static class DriverErrors
 
     public static readonly Error InvalidCurrentStatus =
         Error.Validation("Driver.InvalidCurrentStatus", "The specified current status does not exist.");
+
+    public static readonly Error InvalidVendor =
+        Error.Validation("Driver.InvalidVendor", "The specified vendor does not exist.");
 }

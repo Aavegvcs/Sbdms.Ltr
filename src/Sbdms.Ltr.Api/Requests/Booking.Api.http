@@ -1,4 +1,4 @@
-@HostAddress = http://13.206.26.255:5002
+@HostAddress = https://localhost:7238
 
 ### Look up a vehicle by its QR code (public — for showing details right after a scan)
 GET {{HostAddress}}/api/v1/vehicle/qr/QR-001
@@ -17,6 +17,10 @@ Content-Type: application/json
   "name": "Test Guest",
   "employeeCode": "EMP-101",
   "purpose": "Airport pickup",
+  "pickLatitude": 28.5562,
+  "pickLongitude": 77.1000,
+  "dropLatitude": 28.6139,
+  "dropLongitude": 77.2090,
   "startTime": "2026-07-19T09:00:00Z",
   "endTime": "2026-07-19T11:00:00Z"
 }
@@ -31,6 +35,10 @@ Content-Type: application/json
   "name": "Someone",
   "employeeCode": "EMP-101",
   "purpose": "Airport pickup",
+  "pickLatitude": 28.5562,
+  "pickLongitude": 77.1000,
+  "dropLatitude": 28.6139,
+  "dropLongitude": 77.2090,
   "startTime": "2026-07-19T09:00:00Z",
   "endTime": "2026-07-19T11:00:00Z"
 }
@@ -57,14 +65,18 @@ Content-Type: application/json
 }
 
 ### Book directly using the access token from the response above
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiVXNlcklkIjoiMSIsIk1vYmlsZU51bWJlciI6Ijk4NzY1NDMyMTAiLCJFbXBsb3llZUNvZGUiOiJFTVAtMDAxIiwibmJmIjoxNzg0NjA5NTc0LCJleHAiOjE3ODQ2MTMxNzQsImlhdCI6MTc4NDYwOTU3NCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MTU0IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MTU0In0.Fpgp3WKr2CoOsZ1qKMFn1Iv48mpGH_09HAWHSJ9w7B4
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNSIsIlVzZXJJZCI6IjM1IiwiTW9iaWxlTnVtYmVyIjoiOTg3NjU0MzIxOSIsIkVtcGxveWVlQ29kZSI6IkVNUC0wMDEiLCJuYmYiOjE3ODQ2NTEyNzksImV4cCI6MTc4NDY1NDg3OSwiaWF0IjoxNzg0NjUxMjc5LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUxNTQiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxNTQifQ.wui4r8gwSZcUpWKPIRDv04eS_56PsDudfSfdUCpxDdM
 POST {{HostAddress}}/api/v1/booking
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "qrCode": "QR-200",
+  "qrCode": "QR-455c43ae51274cbfa",
   "purpose": "Client visit",
+  "pickLatitude": 28.5562,
+  "pickLongitude": 77.1000,
+  "dropLatitude": 28.6139,
+  "dropLongitude": 77.2090,
   "startTime": "2026-07-20T09:00:00Z",
   "endTime": "2026-07-20T12:00:00Z"
 }
@@ -76,6 +88,10 @@ Content-Type: application/json
 {
   "qrCode": "QR-001",
   "purpose": "Client visit",
+  "pickLatitude": 28.5562,
+  "pickLongitude": 77.1000,
+  "dropLatitude": 28.6139,
+  "dropLongitude": 77.2090,
   "startTime": "2026-07-20T09:00:00Z",
   "endTime": "2026-07-20T12:00:00Z"
 }
@@ -96,6 +112,10 @@ Authorization: Bearer {{accessToken}}
 {
   "qrCode": "QR-001",
   "purpose": "Trip A",
+  "pickLatitude": 28.5562,
+  "pickLongitude": 77.1000,
+  "dropLatitude": 28.6139,
+  "dropLongitude": 77.2090,
   "startTime": "2026-07-20T09:00:00Z",
   "endTime": "2026-07-20T10:00:00Z"
 }
@@ -109,6 +129,10 @@ Authorization: Bearer {{accessToken}}
 {
   "qrCode": "QR-001",
   "purpose": "Trip B (sharing)",
+  "pickLatitude": 28.5562,
+  "pickLongitude": 77.1000,
+  "dropLatitude": 28.6139,
+  "dropLongitude": 77.2090,
   "startTime": "2026-07-20T09:00:00Z",
   "endTime": "2026-07-20T10:00:00Z"
 }

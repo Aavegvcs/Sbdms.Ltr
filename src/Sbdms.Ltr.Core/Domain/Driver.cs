@@ -7,6 +7,7 @@ public class Driver : AggregateRoot<int>
     public Driver() { }
 
     private Driver(
+        int vendorId,
         string driverName,
         string driverNumber,
         DateOnly dob,
@@ -27,6 +28,7 @@ public class Driver : AggregateRoot<int>
         if (licenceNumber.Length > 50)
             throw new ArgumentException("LicenceNumber cannot exceed 50 characters", nameof(licenceNumber));
 
+        VendorId = vendorId;
         DriverName = driverName;
         DriverNumber = driverNumber;
         Dob = dob;
@@ -35,6 +37,7 @@ public class Driver : AggregateRoot<int>
         CreatedOn = createdOn;
     }
 
+    public int VendorId { get; private set; }
     public string DriverName { get; private set; } = null!;
     public string DriverNumber { get; private set; } = null!;
     public DateOnly Dob { get; private set; }
@@ -43,10 +46,10 @@ public class Driver : AggregateRoot<int>
     public DateTime CreatedOn { get; private set; }
     public DateTime? ModifiedOn { get; private set; }
 
-    public static Driver Create(string driverName, string driverNumber, DateOnly dob, string licenceNumber, int currentStatusId, DateTime createdOn) =>
-        new(driverName, driverNumber, dob, licenceNumber, currentStatusId, createdOn);
+    public static Driver Create(int vendorId, string driverName, string driverNumber, DateOnly dob, string licenceNumber, int currentStatusId, DateTime createdOn) =>
+        new(vendorId, driverName, driverNumber, dob, licenceNumber, currentStatusId, createdOn);
 
-    public void Update(string driverName, string driverNumber, DateOnly dob, string licenceNumber, int currentStatusId, DateTime modifiedOn)
+    public void Update(int vendorId, string driverName, string driverNumber, DateOnly dob, string licenceNumber, int currentStatusId, DateTime modifiedOn)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(driverName);
         ArgumentException.ThrowIfNullOrWhiteSpace(driverNumber);
@@ -61,6 +64,7 @@ public class Driver : AggregateRoot<int>
         if (licenceNumber.Length > 50)
             throw new ArgumentException("LicenceNumber cannot exceed 50 characters", nameof(licenceNumber));
 
+        VendorId = vendorId;
         DriverName = driverName;
         DriverNumber = driverNumber;
         Dob = dob;

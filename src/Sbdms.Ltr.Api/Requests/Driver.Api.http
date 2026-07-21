@@ -11,11 +11,13 @@ GET {{HostAddress}}/api/v1/driver/{{driverId}}
 Accept: application/json
 
 ### Add driver
+# vendorId must be an existing Vendor.Id (create via Vendor.Api.http — Id 1 is seeded by the AddVendorAndVehicleDetails migration),
 # currentStatusId must be an existing CurrentStatus.Id (create one first via CurrentStatus.Api.http)
 POST {{HostAddress}}/api/v1/driver
 Content-Type: application/json
 
 {
+  "vendorId": 1,
   "driverName": "Ramesh Kumar",
   "driverNumber": "9876543210",
   "dob": "1990-05-20",
@@ -30,6 +32,7 @@ Content-Type: application/json
 
 {
   "id": {{driverId}},
+  "vendorId": 1,
   "driverName": "Ramesh Kumar Singh",
   "driverNumber": "9876543211",
   "dob": "1990-05-20",
@@ -42,6 +45,7 @@ POST {{HostAddress}}/api/v1/driver
 Content-Type: application/json
 
 {
+  "vendorId": 1,
   "driverName": "Suresh",
   "driverNumber": "9999999999",
   "dob": "1985-01-01",
@@ -54,11 +58,25 @@ POST {{HostAddress}}/api/v1/driver
 Content-Type: application/json
 
 {
+  "vendorId": 1,
   "driverName": "Unknown Status Driver",
   "driverNumber": "9000000000",
   "dob": "1992-03-15",
   "licenceNumber": "DL-99999",
   "currentStatusId": 999
+}
+
+### Add driver with unknown vendorId (expect 400 validation error)
+POST {{HostAddress}}/api/v1/driver
+Content-Type: application/json
+
+{
+  "vendorId": 999,
+  "driverName": "Unknown Vendor Driver",
+  "driverNumber": "9000000001",
+  "dob": "1992-03-15",
+  "licenceNumber": "DL-88888",
+  "currentStatusId": 1
 }
 
 ### Get driver by unknown id (expect 404 Not Found)

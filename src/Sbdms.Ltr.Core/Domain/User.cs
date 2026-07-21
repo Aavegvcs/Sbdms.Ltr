@@ -10,16 +10,12 @@ public class User : AggregateRoot<int>
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(mobileNumber);
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        ArgumentException.ThrowIfNullOrWhiteSpace(employeeCode);
 
         if (mobileNumber.Length > 15)
             throw new ArgumentException("MobileNumber cannot exceed 15 characters", nameof(mobileNumber));
 
         if (name.Length > 100)
             throw new ArgumentException("Name cannot exceed 100 characters", nameof(name));
-
-        if (employeeCode.Length > 50)
-            throw new ArgumentException("EmployeeCode cannot exceed 50 characters", nameof(employeeCode));
 
         MobileNumber = mobileNumber;
         Name = name;

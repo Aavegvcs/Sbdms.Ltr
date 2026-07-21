@@ -16,7 +16,9 @@ public class GetAllBookingsHandler(IBookingRepository bookingRepository, IUnitOf
 
         // Read-time fallback: close out any stale trip heads before returning results.
         var staleHeadIds = bookings
-            .Where(b => b.TripId is null && b.Status == BookingStatus.Started && BookingTripPolicy.IsStale(b.LastActivityOn, now))
+            .Where(b => (b.TripId is null || b.TripId == b.Id)
+                && b.Status == BookingStatus.Started
+                && BookingTripPolicy.IsStale(b.LastActivityOn, now))
             .Select(b => b.Id)
             .ToList();
 

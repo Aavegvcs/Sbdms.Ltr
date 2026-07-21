@@ -8,6 +8,7 @@ public static class DriverMappingExtensions
     public static DriverResponse ToResponse(this Driver driver) =>
         new(
             driver.Id,
+            driver.VendorId,
             driver.DriverName,
             driver.DriverNumber,
             driver.Dob,
