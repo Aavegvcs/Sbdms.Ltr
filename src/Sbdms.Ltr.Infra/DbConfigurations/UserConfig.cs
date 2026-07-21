@@ -26,7 +26,7 @@ public class UserConfig : IEntityTypeConfiguration<User>
             .HasMaxLength(50)
             .IsRequired();
 
-        builder.HasIndex(x => x.EmployeeCode).IsUnique();
+        builder.HasIndex(x => x.EmployeeCode);
 
         builder.Property(x => x.Otp).HasMaxLength(6);
         builder.Property(x => x.AccessToken).HasMaxLength(2000);

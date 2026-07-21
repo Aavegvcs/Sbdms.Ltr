@@ -12,7 +12,4 @@ public static class BookingErrors
 
     public static readonly Error InvalidTimeRange =
         Error.Validation("Booking.InvalidTimeRange", "EndTime must be after StartTime.");
-
-    public static readonly Error VehicleOccupied =
-        Error.Conflict("Booking.VehicleOccupied", "This vehicle is currently occupied. Please try again shortly.");
 }

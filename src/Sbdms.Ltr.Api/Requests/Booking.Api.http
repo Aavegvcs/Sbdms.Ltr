@@ -1,4 +1,4 @@
-@HostAddress = http://localhost:5154
+@HostAddress = http://13.206.26.255:5002
 
 ### Look up a vehicle by its QR code (public — for showing details right after a scan)
 GET {{HostAddress}}/api/v1/vehicle/qr/QR-001
@@ -84,9 +84,8 @@ Content-Type: application/json
 # Shared-ride pooling (same vehicle, multiple riders)
 #####################################################################
 # Book the SAME qrCode twice with two different logged-in users (see Path B above for getting a token):
-#   - 2nd booking within 2 minutes of the 1st  -> pools in: same "tripId" in the response
-#   - 2nd booking 2-5 minutes after the last one -> rejected, 409 Booking.VehicleOccupied
-#   - 2nd booking more than 5 minutes after the last one -> starts a brand new trip;
+#   - 2nd booking within 2 minutes of the 1st -> pools in: same "tripId" in the response
+#   - 2nd booking more than 2 minutes after the last one -> starts a brand new trip;
 #     the previous trip's booking(s) flip to "Completed" automatically
 
 ### Book vehicle as user A (starts a fresh trip — tripId in the response equals its own id)

@@ -30,10 +30,6 @@ public class GuestStartBookingHandler(
 
         if (user is null)
         {
-            var duplicateEmployeeCode = await userRepository.GetByAsync(u => u.EmployeeCode == request.EmployeeCode);
-            if (duplicateEmployeeCode is not null)
-                return UserErrors.DuplicateEmployeeCode;
-
             user = User.Create(request.MobileNumber, request.Name, request.EmployeeCode, DateTime.UtcNow);
 
             var addResult = await userRepository.AddAsync(user);
