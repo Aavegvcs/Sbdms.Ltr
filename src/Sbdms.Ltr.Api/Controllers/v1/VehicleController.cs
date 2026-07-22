@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Sbdms.Ltr.Api.Filters;
 using Sbdms.Ltr.Contracts.Vehicle;
 using Sbdms.Ltr.Core.Feature.Vehicles;
 
@@ -17,7 +18,10 @@ public class VehicleController(
     GetVehicleQrImageHandler getVehicleQrImageHandler,
     RegenerateVehicleQrCodeHandler regenerateVehicleQrCodeHandler,
     ChangeVehicleDriverHandler changeVehicleDriverHandler,
-    GetVehicleDriverHistoryHandler getVehicleDriverHistoryHandler) : ApiController
+    GetVehicleDriverHistoryHandler getVehicleDriverHistoryHandler,
+    UpdateVehicleLocationHandler updateVehicleLocationHandler,
+    GetVehicleLocationHandler getVehicleLocationHandler,
+    GetVehicleLocationHistoryHandler getVehicleLocationHistoryHandler) : ApiController
 {
     [HttpPost]
     public async Task<IActionResult> AddVehicle([FromBody] AddVehicleRequest request)
@@ -91,6 +95,34 @@ public class VehicleController(
     public async Task<IActionResult> GetVehicleDriverHistory(int id)
     {
         var response = await getVehicleDriverHistoryHandler.HandleAsync(id);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
+    // Reports a vehicle's current position — called by the GPS device itself, which only
+    // knows the vehicle's registration number, not our internal id. Upserts the one row
+    // that vehicle has. Gated by a shared secret (X-Internal-Api-Key) instead of a user JWT,
+    // since the device has no user identity to authenticate as.
+    [HttpPut("location")]
+    [RequireInternalApiKey]
+    public async Task<IActionResult> UpdateVehicleLocation([FromBody] UpdateVehicleLocationRequest request)
+    {
+        var response = await updateVehicleLocationHandler.HandleAsync(request);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
+    // This vehicle's most recently reported position.
+    [HttpGet("{id:int}/location")]
+    public async Task<IActionResult> GetVehicleLocation(int id)
+    {
+        var response = await getVehicleLocationHandler.HandleAsync(id);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
+    // Every position ever reported for this vehicle, most recent first.
+    [HttpGet("{id:int}/location/history")]
+    public async Task<IActionResult> GetVehicleLocationHistory(int id)
+    {
+        var response = await getVehicleLocationHistoryHandler.HandleAsync(id);
         return response.Match(result => Ok(response.Value), errors => Problem(errors));
     }
 }

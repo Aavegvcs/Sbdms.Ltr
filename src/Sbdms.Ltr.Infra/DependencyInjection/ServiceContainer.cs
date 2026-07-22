@@ -26,8 +26,11 @@ public static class ServiceContainer
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
         services.AddScoped<IVehicleDriverAssignmentLogRepository, VehicleDriverAssignmentLogRepository>();
+        services.AddScoped<IVehicleLocationRepository, VehicleLocationRepository>();
+        services.AddScoped<IVehicleLocationHistoryRepository, VehicleLocationHistoryRepository>();
 
         services.Configure<JwtOptions>(config.GetSection(JwtOptions.SectionName));
+        services.Configure<InternalApiKeyOptions>(config.GetSection(InternalApiKeyOptions.SectionName));
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddSingleton<IQrCodeGenerator, QrCodeGenerator>();
 

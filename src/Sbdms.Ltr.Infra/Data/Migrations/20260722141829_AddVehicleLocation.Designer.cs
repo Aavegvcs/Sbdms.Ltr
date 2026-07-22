@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sbdms.Ltr.Infra.Data;
 
@@ -11,9 +12,11 @@ using Sbdms.Ltr.Infra.Data;
 namespace Sbdms.Ltr.Infra.Data.Migrations
 {
     [DbContext(typeof(LtrAppDbContext))]
-    partial class LtrAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260722141829_AddVehicleLocation")]
+    partial class AddVehicleLocation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -411,33 +414,6 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
                     b.ToTable("VehicleLocations", (string)null);
                 });
 
-            modelBuilder.Entity("Sbdms.Ltr.Core.Domain.VehicleLocationHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(9,6)");
-
-                    b.Property<decimal>("Longitude")
-                        .HasColumnType("decimal(9,6)");
-
-                    b.Property<DateTime>("RecordedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VehicleId", "RecordedOn");
-
-                    b.ToTable("VehicleLocationHistories", (string)null);
-                });
-
             modelBuilder.Entity("Sbdms.Ltr.Core.Domain.VehicleType", b =>
                 {
                     b.Property<int>("Id")
@@ -595,15 +571,6 @@ namespace Sbdms.Ltr.Infra.Data.Migrations
                 });
 
             modelBuilder.Entity("Sbdms.Ltr.Core.Domain.VehicleLocation", b =>
-                {
-                    b.HasOne("Sbdms.Ltr.Core.Domain.Vehicle", null)
-                        .WithMany()
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Sbdms.Ltr.Core.Domain.VehicleLocationHistory", b =>
                 {
                     b.HasOne("Sbdms.Ltr.Core.Domain.Vehicle", null)
                         .WithMany()

@@ -13,6 +13,8 @@ public class LtrAppDbContext(DbContextOptions<LtrAppDbContext> options) : DbCont
     public DbSet<User> Users => Set<User>();
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<VehicleDriverAssignmentLog> VehicleDriverAssignmentLogs => Set<VehicleDriverAssignmentLog>();
+    public DbSet<VehicleLocation> VehicleLocations => Set<VehicleLocation>();
+    public DbSet<VehicleLocationHistory> VehicleLocationHistories => Set<VehicleLocationHistory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -21,4 +21,7 @@ public static class VehicleErrors
 
     public static readonly Error InvalidVendor =
         Error.Validation("Vehicle.InvalidVendor", "The specified vendor does not exist.");
+
+    public static readonly Error LocationNotFound =
+        Error.NotFound("Vehicle.LocationNotFound", "No location has been reported for this vehicle yet.");
 }

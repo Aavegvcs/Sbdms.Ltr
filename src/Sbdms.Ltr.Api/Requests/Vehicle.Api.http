@@ -154,3 +154,78 @@ Content-Type: application/json
 
 ### View this vehicle's driver re-assignment history, most recent first
 GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/driver-history
+
+#####################################################################
+# Vehicle location — VehicleLocations holds only the latest position (fast lookups);
+# every report is also appended forever to VehicleLocationHistories.
+#####################################################################
+
+@internalApiKey = abec10c209704c0b072ed672c60c61bfd9bdc624672e30cb3d379da6561bc687
+
+### Report/update a vehicle's current position (upsert) — called by the GPS device itself,
+# which identifies the vehicle by its registration number, not our internal id.
+# Gated by X-Internal-Api-Key instead of a user JWT (the device has no user identity).
+PUT {{HostAddress}}/api/v1/vehicle/location
+Content-Type: application/json
+X-Internal-Api-Key: {{internalApiKey}}
+
+{
+  "vehicleNumber": "dl123h477",
+  "latitude": 28.6139,
+  "longitude": 77.2090
+}
+
+### Report without the API key (expect 401 Unauthorized)
+PUT {{HostAddress}}/api/v1/vehicle/location
+Content-Type: application/json
+
+{
+  "vehicleNumber": "dl123h477",
+  "latitude": 28.6139,
+  "longitude": 77.2090
+}
+
+### Report with the wrong API key (expect 401 Unauthorized)
+PUT {{HostAddress}}/api/v1/vehicle/location
+Content-Type: application/json
+X-Internal-Api-Key: not-the-real-key
+
+{
+  "vehicleNumber": "dl123h477",
+  "latitude": 28.6139,
+  "longitude": 77.2090
+}
+
+### Report a location for an unknown vehicleNumber (expect 404 Not Found)
+PUT {{HostAddress}}/api/v1/vehicle/location
+Content-Type: application/json
+X-Internal-Api-Key: {{internalApiKey}}
+
+{
+  "vehicleNumber": "DOES-NOT-EXIST",
+  "latitude": 28.6139,
+  "longitude": 77.2090
+}
+
+### Report an out-of-range latitude (expect 500 — domain throws ArgumentException, not caught as a clean error)
+PUT {{HostAddress}}/api/v1/vehicle/location
+Content-Type: application/json
+X-Internal-Api-Key: {{internalApiKey}}
+
+{
+  "vehicleNumber": "DL-01-AB-1234",
+  "latitude": 200,
+  "longitude": 77.2090
+}
+
+### Get this vehicle's current position
+GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/location
+Accept: application/json
+
+### Get location for a vehicle that's never reported one (expect 404 Not Found)
+GET {{HostAddress}}/api/v1/vehicle/999999/location
+Accept: application/json
+
+### Get every position ever reported for this vehicle, most recent first
+GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/location/history
+Accept: application/json
