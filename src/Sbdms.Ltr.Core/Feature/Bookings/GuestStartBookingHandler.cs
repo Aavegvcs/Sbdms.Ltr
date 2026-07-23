@@ -6,6 +6,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Bookings;
 
 // "Scan QR as a new/unrecognized user" flow: identify (or register) the user by mobile number,
@@ -35,7 +36,7 @@ public class GuestStartBookingHandler(
 
         if (user is null)
         {
-            user = User.Create(request.MobileNumber, request.Name, request.EmployeeCode, DateTime.UtcNow);
+            user = User.Create(request.MobileNumber, request.Name, request.EmployeeCode, IndianStandardTime.Now);
 
             var addResult = await userRepository.AddAsync(user);
             if (addResult.IsError)
@@ -46,7 +47,7 @@ public class GuestStartBookingHandler(
             await unitOfWork.SaveChangesAsync();
         }
 
-        var now = DateTime.UtcNow;
+        var now = IndianStandardTime.Now;
 
         var tripResult = await BookingTripResolver.ResolveAsync(bookingRepository, vehicle.Id, now);
         if (tripResult.IsError)

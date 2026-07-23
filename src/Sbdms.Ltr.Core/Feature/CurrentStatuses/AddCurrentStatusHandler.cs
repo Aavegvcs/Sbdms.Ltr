@@ -6,6 +6,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.CurrentStatuses;
 
 public class AddCurrentStatusHandler(ICurrentStatusRepository currentStatusRepository, IUnitOfWork unitOfWork)
@@ -16,7 +17,7 @@ public class AddCurrentStatusHandler(ICurrentStatusRepository currentStatusRepos
         if (duplicate is not null)
             return CurrentStatusErrors.DuplicateStatusName;
 
-        var currentStatus = CurrentStatus.Create(request.StatusName, request.Status, request.CreatedBy, DateTime.UtcNow);
+        var currentStatus = CurrentStatus.Create(request.StatusName, request.Status, request.CreatedBy, IndianStandardTime.Now);
 
         var result = await currentStatusRepository.AddAsync(currentStatus);
         if (result.IsError)

@@ -6,6 +6,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Bookings;
 
 // Authenticated path: the user is already identified from their access token.
@@ -28,7 +29,7 @@ public class CreateBookingHandler(
             ? await driverRepository.GetByAsync(d => d.Id == vehicle.DriverId)
             : null;
 
-        var now = DateTime.UtcNow;
+        var now = IndianStandardTime.Now;
 
         var tripResult = await BookingTripResolver.ResolveAsync(bookingRepository, vehicle.Id, now);
         if (tripResult.IsError)

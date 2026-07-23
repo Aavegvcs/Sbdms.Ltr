@@ -5,6 +5,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Users;
 
 public class VerifyOtpHandler(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator, IUnitOfWork unitOfWork)
@@ -20,7 +21,7 @@ public class VerifyOtpHandler(IUserRepository userRepository, IJwtTokenGenerator
         if (string.IsNullOrEmpty(user.Otp) || user.OtpGeneratedOn is null)
             return UserErrors.OtpNotRequested;
 
-        if (DateTime.UtcNow > user.OtpGeneratedOn.Value.AddMinutes(OtpExpiryMinutes))
+        if (IndianStandardTime.Now > user.OtpGeneratedOn.Value.AddMinutes(OtpExpiryMinutes))
             return UserErrors.OtpExpired;
 
         if (user.Otp != request.Otp)
@@ -29,7 +30,7 @@ public class VerifyOtpHandler(IUserRepository userRepository, IJwtTokenGenerator
         var accessToken = jwtTokenGenerator.GenerateAccessToken(user);
         var refreshToken = jwtTokenGenerator.GenerateRefreshToken();
 
-        user.SetTokens(accessToken, refreshToken, DateTime.UtcNow);
+        user.SetTokens(accessToken, refreshToken, IndianStandardTime.Now);
 
         var result = await userRepository.UpdateAsync(user);
         if (result.IsError)

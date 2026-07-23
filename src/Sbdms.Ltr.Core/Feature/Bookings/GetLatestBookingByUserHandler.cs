@@ -5,6 +5,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Bookings;
 
 public class GetLatestBookingByUserHandler(IBookingRepository bookingRepository, IUnitOfWork unitOfWork)
@@ -17,7 +18,7 @@ public class GetLatestBookingByUserHandler(IBookingRepository bookingRepository,
 
         // Read-time fallback: close out the trip if it's gone stale, even though nothing
         // has scanned this vehicle again to trigger that closure.
-        await BookingTripResolver.ReconcileIfStaleAsync(bookingRepository, booking, DateTime.UtcNow);
+        await BookingTripResolver.ReconcileIfStaleAsync(bookingRepository, booking, IndianStandardTime.Now);
         await unitOfWork.SaveChangesAsync();
 
         return new CoreResponse<BookingResponse>(booking.ToResponse(), true, "Latest booking retrieved successfully.");

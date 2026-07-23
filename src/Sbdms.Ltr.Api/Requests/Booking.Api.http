@@ -66,6 +66,7 @@ Content-Type: application/json
 
 ### Book directly using the access token from the response above
 @accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNSIsIlVzZXJJZCI6IjM1IiwiTW9iaWxlTnVtYmVyIjoiOTg3NjU0MzIxOSIsIkVtcGxveWVlQ29kZSI6IkVNUC0wMDEiLCJuYmYiOjE3ODQ3ODMyOTgsImV4cCI6MTc4NDc4Njg5OCwiaWF0IjoxNzg0NzgzMjk4LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUxNTQiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxNTQifQ.udnvUNoEsskcIhvGTDIyUmMf-SRAVvPWJ4eVrNWRIy0
+
 POST {{HostAddress}}/api/v1/booking
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
@@ -154,7 +155,7 @@ Accept: application/json
 ### Get the current user's latest booking (requires a token — see Path B above)
 GET {{HostAddress}}/api/v1/booking/me/latest
 Accept: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNyIsIlVzZXJJZCI6IjM3IiwiTW9iaWxlTnVtYmVyIjoiOTk5MDAwMTExMSIsIkVtcGxveWVlQ29kZSI6IkVNUC05OTkiLCJuYmYiOjE3ODQ3ODgwNDksImV4cCI6MTc4NDc5MTY0OSwiaWF0IjoxNzg0Nzg4MDQ5LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUxNTQiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxNTQifQ.ZRdncUzl3tRsy0d4xYk0liZ7ob7heYXfBiUadmUY3Lc
 
 ### Get the current user's past booking history (requires a token — see Path B above)
 GET {{HostAddress}}/api/v1/booking/me/history

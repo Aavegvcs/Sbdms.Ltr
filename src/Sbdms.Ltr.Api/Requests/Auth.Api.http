@@ -1,4 +1,4 @@
-@HostAddress = http://localhost:5154
+@HostAddress = https://localhost:7238
 
 ### Add user (register ahead of time — mobile number, name, employee code)
 POST {{HostAddress}}/api/v1/user
@@ -118,3 +118,17 @@ Content-Type: application/json
   "name": "New Employee",
   "employeeCode": "EMP-999"
 }
+
+#####################################################################
+# Profile (resolved from the access token, not the route)
+#####################################################################
+
+### Get my own profile
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNiIsIlVzZXJJZCI6IjM2IiwiTW9iaWxlTnVtYmVyIjoiOTg3NjU0MzIxODciLCJFbXBsb3llZUNvZGUiOiJFTVAwMDEiLCJuYmYiOjE3ODQ3ODY3MzAsImV4cCI6MTc4NTAyNjczMCwiaWF0IjoxNzg0Nzg2NzMwLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUxNTQiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxNTQifQ.nZTW5Vv_Mk9dYG-mpeM-GBCgg8xkEFPgGt5GqxyZtms
+
+GET {{HostAddress}}/api/v1/user/me
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNSIsIlVzZXJJZCI6IjM1IiwiTW9iaWxlTnVtYmVyIjoiOTg3NjU0MzIxOSIsIkVtcGxveWVlQ29kZSI6IkVNUC0wMDEiLCJuYmYiOjE3ODQ3ODgzNzcsImV4cCI6MTc4NTE0ODM3NywiaWF0IjoxNzg0Nzg4Mzc3LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUxNTQiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxNTQifQ.YTmm-yQ7w2vgRNzk3KXVxrjodxh0_5TI688w-w1HFbg
+### Get my profile without a token (expect 401 Unauthorized)
+GET {{HostAddress}}/api/v1/user/me
+Accept: application/json

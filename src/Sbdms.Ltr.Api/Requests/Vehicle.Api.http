@@ -1,4 +1,4 @@
-@HostAddress = http://localhost:5154
+@HostAddress = https://localhost:7238
 
 ### Get all vehicles
 GET {{HostAddress}}/api/v1/vehicle
@@ -165,7 +165,7 @@ GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/driver-history
 ### Report/update a vehicle's current position (upsert) — called by the GPS device itself,
 # which identifies the vehicle by its registration number, not our internal id.
 # Gated by X-Internal-Api-Key instead of a user JWT (the device has no user identity).
-POST {{HostAddress}}/api/v1/vehicle/location
+POST http://13.206.26.255:5002/api/v1/vehicle/location
 Content-Type: application/json
 X-Internal-Api-Key: {{internalApiKey}}
 

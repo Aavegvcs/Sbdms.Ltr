@@ -6,6 +6,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Drivers;
 
 public class AddDriverHandler(
@@ -24,7 +25,7 @@ public class AddDriverHandler(
         if (currentStatus is null)
             return DriverErrors.InvalidCurrentStatus;
 
-        var driver = Driver.Create(request.VendorId, request.DriverName, request.DriverNumber, request.Dob, request.LicenceNumber, request.CurrentStatusId, DateTime.UtcNow);
+        var driver = Driver.Create(request.VendorId, request.DriverName, request.DriverNumber, request.Dob, request.LicenceNumber, request.CurrentStatusId, IndianStandardTime.Now);
 
         var result = await driverRepository.AddAsync(driver);
         if (result.IsError)

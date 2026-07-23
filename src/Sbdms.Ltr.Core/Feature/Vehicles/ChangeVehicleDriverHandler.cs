@@ -6,6 +6,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Vehicles;
 
 // Re-pairs a vehicle with a (possibly different, possibly no) driver. A driver can only be
@@ -26,7 +27,7 @@ public class ChangeVehicleDriverHandler(
             return existing.Errors;
 
         var vehicle = existing.Value;
-        var now = DateTime.UtcNow;
+        var now = IndianStandardTime.Now;
 
         Driver? newDriver = null;
         if (request.DriverId is not null)

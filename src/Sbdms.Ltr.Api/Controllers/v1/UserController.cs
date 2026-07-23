@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sbdms.Ltr.Contracts.User;
 using Sbdms.Ltr.Core.Feature.Users;
@@ -32,6 +33,19 @@ public class UserController(
     public async Task<IActionResult> GetUserById(int id)
     {
         var response = await getUserByIdHandler.HandleAsync(id);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
+    // The caller's own profile, resolved from their access token — no id in the route.
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetMyProfile()
+    {
+        var userIdClaim = User.FindFirst("UserId")?.Value;
+        if (!int.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var response = await getUserByIdHandler.HandleAsync(userId);
         return response.Match(result => Ok(response.Value), errors => Problem(errors));
     }
 

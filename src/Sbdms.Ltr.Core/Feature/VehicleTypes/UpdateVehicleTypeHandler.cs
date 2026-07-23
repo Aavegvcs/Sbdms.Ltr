@@ -5,6 +5,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.VehicleTypes;
 
 public class UpdateVehicleTypeHandler(IVehicleTypeRepository vehicleTypeRepository, IUnitOfWork unitOfWork)
@@ -29,7 +30,7 @@ public class UpdateVehicleTypeHandler(IVehicleTypeRepository vehicleTypeReposito
             request.IsActive,
             request.Occupancy,
             request.ModBy,
-            DateTime.UtcNow);
+            IndianStandardTime.Now);
 
         var result = await vehicleTypeRepository.UpdateAsync(vehicleType);
         if (result.IsError)

@@ -4,6 +4,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Vehicles;
 
 // Rotates an existing vehicle's QrUniqueCode to a brand-new value — the old QR sticker stops
@@ -17,7 +18,7 @@ public class RegenerateVehicleQrCodeHandler(IVehicleRepository vehicleRepository
             return existing.Errors;
 
         var vehicle = existing.Value;
-        var now = DateTime.UtcNow;
+        var now = IndianStandardTime.Now;
 
         string newQrCode;
         do
