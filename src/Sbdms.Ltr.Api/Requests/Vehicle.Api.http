@@ -165,7 +165,7 @@ GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/driver-history
 ### Report/update a vehicle's current position (upsert) — called by the GPS device itself,
 # which identifies the vehicle by its registration number, not our internal id.
 # Gated by X-Internal-Api-Key instead of a user JWT (the device has no user identity).
-PUT {{HostAddress}}/api/v1/vehicle/location
+POST {{HostAddress}}/api/v1/vehicle/location
 Content-Type: application/json
 X-Internal-Api-Key: {{internalApiKey}}
 
@@ -176,7 +176,7 @@ X-Internal-Api-Key: {{internalApiKey}}
 }
 
 ### Report without the API key (expect 401 Unauthorized)
-PUT {{HostAddress}}/api/v1/vehicle/location
+POST {{HostAddress}}/api/v1/vehicle/location
 Content-Type: application/json
 
 {
@@ -186,7 +186,7 @@ Content-Type: application/json
 }
 
 ### Report with the wrong API key (expect 401 Unauthorized)
-PUT {{HostAddress}}/api/v1/vehicle/location
+POST {{HostAddress}}/api/v1/vehicle/location
 Content-Type: application/json
 X-Internal-Api-Key: not-the-real-key
 
@@ -197,7 +197,7 @@ X-Internal-Api-Key: not-the-real-key
 }
 
 ### Report a location for an unknown vehicleNumber (expect 404 Not Found)
-PUT {{HostAddress}}/api/v1/vehicle/location
+POST {{HostAddress}}/api/v1/vehicle/location
 Content-Type: application/json
 X-Internal-Api-Key: {{internalApiKey}}
 
@@ -208,7 +208,7 @@ X-Internal-Api-Key: {{internalApiKey}}
 }
 
 ### Report an out-of-range latitude (expect 500 — domain throws ArgumentException, not caught as a clean error)
-PUT {{HostAddress}}/api/v1/vehicle/location
+POST {{HostAddress}}/api/v1/vehicle/location
 Content-Type: application/json
 X-Internal-Api-Key: {{internalApiKey}}
 
