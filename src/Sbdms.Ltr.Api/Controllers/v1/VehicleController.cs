@@ -99,10 +99,12 @@ public class VehicleController(
     }
 
     // Reports a vehicle's current position — called by the GPS device itself, which only
-    // knows the vehicle's registration number, not our internal id. Upserts the one row
-    // that vehicle has. Gated by a shared secret (X-Internal-Api-Key) instead of a user JWT,
-    // since the device has no user identity to authenticate as.
-    [HttpPut("location")]
+    // knows the vehicle's registration number, not our internal id. Every call appends a new
+    // row to VehicleLocationHistories (not idempotent), so POST fits better than PUT even
+    // though it also upserts VehicleLocations as an internal side effect. Gated by a shared
+    // secret (X-Internal-Api-Key) instead of a user JWT, since the device has no user identity
+    // to authenticate as.
+    [HttpPost("location")]
     [RequireInternalApiKey]
     public async Task<IActionResult> UpdateVehicleLocation([FromBody] UpdateVehicleLocationRequest request)
     {
