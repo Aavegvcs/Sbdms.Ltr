@@ -5,6 +5,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Bookings;
 
 // Returns this user's completed/cancelled bookings — their currently active booking (if any)
@@ -13,7 +14,7 @@ public class GetBookingHistoryByUserHandler(IBookingRepository bookingRepository
 {
     public async Task<Result<CoreResponse<IEnumerable<BookingResponse>>>> HandleAsync(int userId)
     {
-        var now = DateTime.UtcNow;
+        var now = IndianStandardTime.Now;
 
         var bookings = await bookingRepository.GetAllAsQueryable()
             .Where(b => b.UserId == userId)

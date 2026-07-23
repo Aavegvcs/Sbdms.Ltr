@@ -5,6 +5,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Users;
 
 public class RefreshTokenHandler(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator, IUnitOfWork unitOfWork)
@@ -18,13 +19,13 @@ public class RefreshTokenHandler(IUserRepository userRepository, IJwtTokenGenera
             return UserErrors.InvalidRefreshToken;
 
         if (user.RefreshTokenGeneratedOn is null ||
-            user.RefreshTokenGeneratedOn.Value.AddDays(RefreshTokenExpiryDays) < DateTime.UtcNow)
+            user.RefreshTokenGeneratedOn.Value.AddDays(RefreshTokenExpiryDays) < IndianStandardTime.Now)
             return UserErrors.InvalidRefreshToken;
 
         var accessToken = jwtTokenGenerator.GenerateAccessToken(user);
         var refreshToken = jwtTokenGenerator.GenerateRefreshToken();
 
-        user.SetTokens(accessToken, refreshToken, DateTime.UtcNow);
+        user.SetTokens(accessToken, refreshToken, IndianStandardTime.Now);
 
         var result = await userRepository.UpdateAsync(user);
         if (result.IsError)

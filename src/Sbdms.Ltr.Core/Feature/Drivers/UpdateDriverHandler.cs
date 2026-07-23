@@ -5,6 +5,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Drivers;
 
 public class UpdateDriverHandler(
@@ -33,7 +34,7 @@ public class UpdateDriverHandler(
             return DriverErrors.DuplicateLicenceNumber;
 
         var driver = existing.Value;
-        driver.Update(request.VendorId, request.DriverName, request.DriverNumber, request.Dob, request.LicenceNumber, request.CurrentStatusId, DateTime.UtcNow);
+        driver.Update(request.VendorId, request.DriverName, request.DriverNumber, request.Dob, request.LicenceNumber, request.CurrentStatusId, IndianStandardTime.Now);
 
         var result = await driverRepository.UpdateAsync(driver);
         if (result.IsError)

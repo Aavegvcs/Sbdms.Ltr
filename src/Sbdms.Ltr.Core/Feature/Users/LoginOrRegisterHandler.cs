@@ -5,6 +5,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Users;
 
 // Finds the user by mobile number and logs them in; if none exists, registers one from
@@ -17,7 +18,7 @@ public class LoginOrRegisterHandler(IUserRepository userRepository, IJwtTokenGen
 
         if (user is null)
         {
-            user = User.Create(request.MobileNumber, request.Name, request.EmployeeCode, DateTime.UtcNow);
+            user = User.Create(request.MobileNumber, request.Name, request.EmployeeCode, IndianStandardTime.Now);
 
             var addResult = await userRepository.AddAsync(user);
             if (addResult.IsError)
@@ -27,7 +28,7 @@ public class LoginOrRegisterHandler(IUserRepository userRepository, IJwtTokenGen
             await unitOfWork.SaveChangesAsync();
         }
 
-        var now = DateTime.UtcNow;
+        var now = IndianStandardTime.Now;
         var accessToken = jwtTokenGenerator.GenerateAccessToken(user);
         var refreshToken = jwtTokenGenerator.GenerateRefreshToken();
         user.SetTokens(accessToken, refreshToken, now);

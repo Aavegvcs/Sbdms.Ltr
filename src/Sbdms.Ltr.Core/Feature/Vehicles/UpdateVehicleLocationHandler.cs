@@ -6,6 +6,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Vehicles;
 
 // Upserts the vehicle's current position (one row per vehicle, overwritten on every report)
@@ -24,7 +25,7 @@ public class UpdateVehicleLocationHandler(
         if (vehicle is null)
             return VehicleErrors.VehicleNotFound;
 
-        var now = DateTime.UtcNow;
+        var now = IndianStandardTime.Now;
         var location = await locationRepository.GetByVehicleIdAsync(vehicle.Id);
 
         if (location is null)

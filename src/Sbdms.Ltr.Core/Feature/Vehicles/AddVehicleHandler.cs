@@ -6,6 +6,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Vehicles;
 
 public class AddVehicleHandler(
@@ -46,7 +47,7 @@ public class AddVehicleHandler(
             request.VehicleCompany,
             request.Modal,
             request.QrUniqueCode,
-            DateTime.UtcNow);
+            IndianStandardTime.Now);
 
         var result = await vehicleRepository.AddAsync(vehicle);
         if (result.IsError)

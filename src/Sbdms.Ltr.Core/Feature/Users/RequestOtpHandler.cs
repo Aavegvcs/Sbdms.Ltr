@@ -6,6 +6,7 @@ using Sbdms.SharedLibrary.ApiResponse;
 using Sbdms.SharedLibrary.Common;
 using Sbdms.SharedLibrary.ResultPattern;
 
+using Sbdms.Ltr.Core.Common.Helper;
 namespace Sbdms.Ltr.Core.Feature.Users;
 
 public class RequestOtpHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, ILogger<RequestOtpHandler> logger)
@@ -19,7 +20,7 @@ public class RequestOtpHandler(IUserRepository userRepository, IUnitOfWork unitO
         // var otp = Random.Shared.Next(100000, 999999).ToString();
         var otp = "123456";
 
-        user.SetOtp(otp, DateTime.UtcNow);
+        user.SetOtp(otp, IndianStandardTime.Now);
 
         var updateResult = await userRepository.UpdateAsync(user);
         if (updateResult.IsError)

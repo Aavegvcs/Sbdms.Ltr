@@ -1,4 +1,4 @@
-@HostAddress = http://localhost:5154
+@HostAddress = https://localhost:7238
 
 ### Get all vendors (the AddVendorAndVehicleDetails migration seeds one: Id 1, "Default Vendor")
 GET {{HostAddress}}/api/v1/vendor
