@@ -11,7 +11,7 @@ public enum TripJoinDecision
 
 public static class BookingTripPolicy
 {
-    public static readonly TimeSpan PoolWindow = TimeSpan.FromMinutes(5);
+    public static readonly TimeSpan PoolWindow = TimeSpan.FromMinutes(30);
 
     public static TripJoinDecision Evaluate(DateTime lastActivityOn, DateTime now)
     {

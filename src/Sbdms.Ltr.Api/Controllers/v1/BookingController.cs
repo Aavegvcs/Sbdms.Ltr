@@ -15,7 +15,8 @@ public class BookingController(
     GetAllBookingsHandler getAllBookingsHandler,
     GetBookingByIdHandler getBookingByIdHandler,
     GetLatestBookingByUserHandler getLatestBookingByUserHandler,
-    GetBookingHistoryByUserHandler getBookingHistoryByUserHandler) : ApiController
+    GetBookingHistoryByUserHandler getBookingHistoryByUserHandler,
+    CompleteBookingHandler completeBookingHandler) : ApiController
 {
     // Path A — new/unrecognized user scans the QR: identify/register by mobile number, log them
     // in, and create the booking, all in one call. No OTP.
@@ -77,6 +78,20 @@ public class BookingController(
     public async Task<IActionResult> GetBookingById(int id)
     {
         var response = await getBookingByIdHandler.HandleAsync(id);
+        return response.Match(result => Ok(response.Value), errors => Problem(errors));
+    }
+
+    // Rider explicitly ends their own ride — hit by the user app. Only completes the
+    // caller's own booking; other riders pooled into the same trip are unaffected.
+    [HttpPost("{id:int}/complete")]
+    [Authorize]
+    public async Task<IActionResult> CompleteBooking(int id)
+    {
+        var userIdClaim = User.FindFirst("UserId")?.Value;
+        if (!int.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var response = await completeBookingHandler.HandleAsync(userId, id);
         return response.Match(result => Ok(response.Value), errors => Problem(errors));
     }
 }

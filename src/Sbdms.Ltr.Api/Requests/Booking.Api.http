@@ -101,8 +101,8 @@ Content-Type: application/json
 # Shared-ride pooling (same vehicle, multiple riders)
 #####################################################################
 # Book the SAME qrCode twice with two different logged-in users (see Path B above for getting a token):
-#   - 2nd booking within 2 minutes of the 1st -> pools in: same "tripId" in the response
-#   - 2nd booking more than 2 minutes after the last one -> starts a brand new trip;
+#   - 2nd booking within 30 minutes of the 1st -> pools in: same "tripId" in the response
+#   - 2nd booking more than 30 minutes after the last one -> starts a brand new trip;
 #     the previous trip's booking(s) flip to "Completed" automatically
 
 ### Book vehicle as user A (starts a fresh trip — tripId in the response equals its own id)
@@ -160,4 +160,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNyIsIlVzZ
 ### Get the current user's past booking history (requires a token — see Path B above)
 GET {{HostAddress}}/api/v1/booking/me/history
 Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+#####################################################################
+# Complete a booking (hit by the rider's app when they end their ride)
+#####################################################################
+
+### Complete my own booking — only affects this booking, not other riders pooled into the same trip
+POST {{HostAddress}}/api/v1/booking/{{bookingId}}/complete
+Authorization: Bearer {{accessToken}}
+
+### Complete without a token (expect 401 Unauthorized)
+POST {{HostAddress}}/api/v1/booking/{{bookingId}}/complete
+
+### Complete someone else's booking (expect 403 Forbidden)
+POST {{HostAddress}}/api/v1/booking/1/complete
+Authorization: Bearer {{accessToken}}
+
+### Complete an already-completed booking (expect 409 Conflict)
+POST {{HostAddress}}/api/v1/booking/{{bookingId}}/complete
 Authorization: Bearer {{accessToken}}
