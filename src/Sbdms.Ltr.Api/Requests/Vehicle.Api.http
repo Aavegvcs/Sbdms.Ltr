@@ -218,6 +218,63 @@ X-Internal-Api-Key: {{internalApiKey}}
   "longitude": 77.2090
 }
 
+###
+
+####
+POST {{HostAddress}}/api/v1/Vehicle/gps/bulk
+Content-Type: application/json
+X-Internal-Api-Key: {{internalApiKey}}
+
+{
+    "vehicleLocations": [
+        {
+            "vehicleNumber": "MH01AB88",
+            "latitude": 19.0760,
+            "longitude": 72.8777
+        },
+        {
+            "vehicleNumber": "MH02CD5687",
+            "latitude": 28.6139,
+            "longitude": 77.2090
+        },
+        {
+            "vehicleNumber": "MH03EF97653",
+            "latitude": 12.9716,
+            "longitude": 77.5946
+        },
+        {
+            "vehicleNumber": "dl123h477",
+            "latitude": 19.0760,
+            "longitude": 72.8777
+        },
+        {
+            "vehicleNumber": "MH02CD5876",
+            "latitude": 28.6139,
+            "longitude": 77.2090
+        },
+        {
+            "vehicleNumber": "MH03EF9972",
+            "latitude": 12.9716,
+            "longitude": 77.5946
+        },
+        {
+            "vehicleNumber": "MH01AB0934",
+            "latitude": 19.0760,
+            "longitude": 72.8777
+        },
+        {
+            "vehicleNumber": "MH02CD5988",
+            "latitude": 28.6139,
+            "longitude": 77.2090
+        },
+        {
+            "vehicleNumber": "MH03EF9092",
+            "latitude": 12.9716,
+            "longitude": 77.5946
+        }
+    ]
+}
+
 ### Get this vehicle's current position
 GET {{HostAddress}}/api/v1/vehicle/{{vehicleId}}/location
 Accept: application/json

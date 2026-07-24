@@ -56,6 +56,8 @@ public static class Extensions
             .AddScoped<GetBookingByIdHandler>()
             .AddScoped<GetLatestBookingByUserHandler>()
             .AddScoped<GetBookingHistoryByUserHandler>()
+            .AddScoped<UpdateVehicleLocationHandler>()
+            .AddScoped<BulkUpdateVehicleLocationHandler>()
             .AddScoped<CompleteBookingHandler>();
 
         return services;

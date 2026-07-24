@@ -14,4 +14,5 @@ public interface IVehicleRepository
     IQueryable<Vehicle> GetAllAsQueryable();
     Task<IEnumerable<Vehicle>> GetAllAsync();
     Task<Vehicle?> GetByAsync(Expression<Func<Vehicle, bool>> predicate);
+    Task<IEnumerable<Vehicle>> GetAllByAsync(Expression<Func<Vehicle, bool>> predicate);
 }

@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sbdms.Ltr.Api.Filters;
 using Sbdms.Ltr.Contracts.Vehicle;
@@ -21,6 +22,7 @@ public class VehicleController(
     GetVehicleDriverHistoryHandler getVehicleDriverHistoryHandler,
     UpdateVehicleLocationHandler updateVehicleLocationHandler,
     GetVehicleLocationHandler getVehicleLocationHandler,
+    BulkUpdateVehicleLocationHandler _bulkUpdateHandler,
     GetVehicleLocationHistoryHandler getVehicleLocationHistoryHandler) : ApiController
 {
     [HttpPost]
@@ -98,6 +100,20 @@ public class VehicleController(
         return response.Match(result => Ok(response.Value), errors => Problem(errors));
     }
 
+
+
+
+    [HttpPost("gps/bulk")]
+    [RequireInternalApiKey]
+    public async Task<IActionResult> BulkUpdateVehicleLocations([FromBody] BulkUpdateVehicleLocationRequest request)
+    {
+        var response = await _bulkUpdateHandler.HandleAsync(request);
+        return response.Match(
+            result => Ok(response.Value),
+            errors => Problem(errors)
+        );
+    }
+
     // Reports a vehicle's current position — called by the GPS device itself, which only
     // knows the vehicle's registration number, not our internal id. Every call appends a new
     // row to VehicleLocationHistories (not idempotent), so POST fits better than PUT even
@@ -111,6 +127,9 @@ public class VehicleController(
         var response = await updateVehicleLocationHandler.HandleAsync(request);
         return response.Match(result => Ok(response.Value), errors => Problem(errors));
     }
+
+
+
 
     // This vehicle's most recently reported position.
     [HttpGet("{id:int}/location")]

@@ -12,4 +12,9 @@ public class VehicleLocationRepository(LtrAppDbContext dbContext) : IVehicleLoca
 
     public void Add(VehicleLocation entity) =>
         dbContext.VehicleLocations.Add(entity);
+
+    public void Update(VehicleLocation entity)
+    {
+        dbContext.VehicleLocations.Update(entity);
+    }
 }
