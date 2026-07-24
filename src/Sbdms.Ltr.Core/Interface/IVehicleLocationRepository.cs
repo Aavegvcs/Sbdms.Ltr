@@ -6,4 +6,5 @@ public interface IVehicleLocationRepository
 {
     Task<VehicleLocation?> GetByVehicleIdAsync(int vehicleId);
     void Add(VehicleLocation entity);
+    void Update(VehicleLocation entity);
 }

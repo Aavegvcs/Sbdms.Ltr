@@ -1,16 +1,14 @@
-using System.IO.Compression;
-using System.Text;
-using System.Text.Json.Serialization;
+using Asp.Versioning;
+using Asp.Versioning.Conventions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
-using Asp.Versioning;
-using Asp.Versioning.Conventions;
-using Scalar.AspNetCore;
 using Sbdms.Ltr.Core;
-using Sbdms.Ltr.Core.Feature;
 using Sbdms.Ltr.Infra.Common;
 using Sbdms.Ltr.Infra.DependencyInjection;
+using Scalar.AspNetCore;
+using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 {

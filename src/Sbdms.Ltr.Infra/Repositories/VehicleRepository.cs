@@ -20,6 +20,8 @@ public class VehicleRepository(LtrAppDbContext dbContext) : IVehicleRepository
         return true;
     }
 
+
+
     public Task<Result<bool>> UpdateAsync(Vehicle entity)
     {
         if (dbContext.Entry(entity).State == EntityState.Detached)
@@ -37,6 +39,14 @@ public class VehicleRepository(LtrAppDbContext dbContext) : IVehicleRepository
         return vehicle;
     }
 
+
+
+    public async Task<IEnumerable<Vehicle>> GetAllByAsync(Expression<Func<Vehicle, bool>> predicate)
+    {
+        return await dbContext.Vehicles
+            .Where(predicate)
+            .ToListAsync();
+    }
     public IQueryable<Vehicle> GetAllAsQueryable() => dbContext.Vehicles.AsNoTracking();
 
     public async Task<IEnumerable<Vehicle>> GetAllAsync() =>
